@@ -1,5 +1,6 @@
 import DataTypes
-LoggedIn = False
+from Bot import Bot
+bot = Bot()
 
 def Packet0x00(buff):
     KeepAliveID = buff.readVarInt()
@@ -14,12 +15,11 @@ def Packet0x01(buff):
     ReducedDebugInfo = buff.readBool()
 
 def Packet0x02(buff):
-    global LoggedIn
-    if LoggedIn == False:
-        UUID = buff.readString()
-        Username = buff.readString()
-        print("UUID:" + UUID)
-        LoggedIn = True
+    if bot.loggedIn == False:
+        bot.UUID = buff.readString()
+        bot.Username = buff.readString()
+        print("UUID:" + bot.UUID)
+        bot.loggedIn = True
     else:
         JSONData = buff.readString()
         Position = buff.readByte()
@@ -349,7 +349,7 @@ def Packet0x36(buff):
 
 def Packet0x37(buff):
     Count = buff.readVarInt()
-    Entry = buff.readBool()
+    Entry = buff.readString()
     Value = buff.readVarInt()
 
 def Packet0x38(buff):

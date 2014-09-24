@@ -84,10 +84,10 @@ class Buffer():
     
     def readPosition(self):
         val = self.readLong()
-         x = val >> 38;
-         y = val << 26 >> 52
-         z = val << 38 >> 38
-         return x, y, z
+        x = val >> 38;
+        y = val << 26 >> 52
+        z = val << 38 >> 38
+        return x, y, z
 
     def readString(self):
         length = self.readVarInt()
