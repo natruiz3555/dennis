@@ -82,6 +82,13 @@ class Buffer():
 			number += (byte & 0x7f) << (7 * reference)
 		return number
 	
+	def readPosition(self):
+		val = self.readLong()
+		 x = val >> 38;
+		 y = val << 26 >> 52
+		 z = val << 38 >> 38
+		 return x, y, z
+
 	def readString(self):
 		length = self.readVarInt()
 		return self.read(length)
