@@ -1,0 +1,69 @@
+<h1>Methods</h1>
+
+<h2>Connection</h2>
+
+<ul>
+<li>login(server, port, username, password)
+<ul>
+<li>Manages connections to the server</li>
+<li>@param string server</li>
+<li>IP of the server to connect to</li>
+<li>@param int port</li>
+<li>Port of the minecraft server</li>
+<li>@param string username</li>
+<li>Username to use</li>
+<li>@param string password</li>
+<li>Password for the bot to use</li>
+<li>@param boolean offline</li>
+<li>True if running in offline mode</li>
+<li>@return True if successful</li>
+</ul></li>
+<li>disconnect()</li>
+</ul>
+
+<h2>Blocks, mining, building</h2>
+
+<ul>
+<li>walkTo(location)</li>
+<li>sendChat(message)
+<ul>
+<li>@param string message</li>
+<li>Message to send to the server console</li>
+</ul></li>
+<li>breakBlock(location) - breaks block with currently held item</li>
+<li>findBlock(blockID)
+<ul>
+<li>@param int blockID</li>
+<li>the kind of block to find</li>
+<li>@return the location of the block int a location object if found, false if else</li>
+</ul></li>
+<li>placeBlock(location) - Places the currently held block at a location
+<ul>
+<li>@return false if object is not placable. </li>
+</ul></li>
+<li>attack(entity)</li>
+<li>jump()</li>
+<li>setSneak(isSneaking)</li>
+<li>eat()</li>
+<li>useItem()</li>
+<li>switchItem()</li>
+<li>chooseItemSlot(slotId)</li>
+<li>craftItem(itemId) </li>
+<li>toContainer(inventorySlot, containerSlot, container) - Move item from bots inventory into a container.</li>
+<li>fromContainer(inventorySlot, containerSlot, container) - Move item from container into bots inventory</li>
+<li>placeSign(text, location, axis)</li>
+<li>findNearest()</li>
+<li>findPlayer(playerName)
+<ul>
+<li>@return A players x y z in location object</li>
+</ul></li>
+<li>findNearestEntity() - gets an entity object for the closest entity from the bot</li>
+</ul>
+
+<h2>Properties</h2>
+
+<ul>
+<li>players = []</li>
+<li>entities = [array of entityclassess]</li>
+<li>world = World() #world class</li>
+</ul>
