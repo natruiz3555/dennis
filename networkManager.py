@@ -36,7 +36,7 @@ login()
 
 while True:
 	try:
-		buff.addRaw(s.recv(8))
+		buff.addRaw(s.recv(16))
 	except socket.error, v:
 		pass
 	if sendData:
@@ -47,6 +47,7 @@ while True:
 		a = hex(packet.readVarInt())
 		while len(a) < 4:
 			a = "0x0" + a[2:]
+		a = a.replace("f", "F")
 		print("+" + a)
 		pDispatch[a](packet)
 

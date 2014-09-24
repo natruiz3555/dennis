@@ -28,7 +28,7 @@ class Buffer():
 			if compress:
 				buff = self.readBuffer(length)
 				buff.readVarInt()
-				buff.string = zlib.decompress(buff.string)
+				buff.string = zlib.decompress(buff.string, -zlib.MAX_WBITS)
 				return buff
 			else:
 				return self.readBuffer(length)
