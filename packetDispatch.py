@@ -1,13 +1,15 @@
-import DataTypes
 from Bot import Bot
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA
 from Crypto.PublicKey import RSA
+from DataTypes import *
+sendData = ""
 bot = Bot()
 
 def Packet0x00(buff):
     KeepAliveID = buff.readVarInt()
+    print("Keep alive")
 
 def Packet0x02(buff):
     if bot.loggedIn == False:
@@ -122,7 +124,10 @@ def Packet0x12(buff):
 
 def Packet0x13(buff):
     Count = buff.readVarInt()
-    EntityIDs = buff.readArrayOfVarInt()
+    EntityIDs = []
+    while Count > 0:
+		EntityIDs.append(buff.readVarInt())
+		Count -= 1
 
 def Packet0x14(buff):
     EntityID = buff.readVarInt()
@@ -354,6 +359,7 @@ def Packet0x37(buff):
         Count -= 1
 
 def Packet0x38(buff):
+    '''
     Action = buff.readVarInt()
     if Action == 0:
         length = buff.readVarInt()
@@ -375,6 +381,11 @@ def Packet0x38(buff):
                 props.append(prop)
                 numofPro -= 1
             length -= 1
+            gamemode = buff.readVarInt()
+            ping = buff.readVarInt()
+            if buff.readBool():
+				displayName = buff.readString()
+				posit = buff.readByte()
     elif Action == 1:
         length = buff.readVarInt()
         UUID =  buff.readLong() + buff.readLong()
@@ -394,13 +405,15 @@ def Packet0x38(buff):
             hasDisplayName = buff.readBool()
             if hasDisplayName:
                 displayName = buff.readString()
+                posit = buff.readByte()
             length -= 1
     elif Action == 4:
         length = buff.readVarInt()
         UUID =  buff.readLong() + buff.readLong()
         print("EROROROROROR")
     Length = buff.readVarInt()
-    UUID = buff.readBool()
+    UUID = buff.readBool()'''
+    pass
 
 def Packet0x39(buff):
     Flags = buff.readByte()
@@ -501,10 +514,12 @@ def Packet0x49(buff):
     Tag = buff.readBool()
 
 def Packet0x00(buff):
-    JSONResponse = buff.readString()
-
-def Packet0x00(buff):
-    JSONData = buff.readString()
+    global sendData
+    keepAlive = buff.readVarInt()
+    resp = "\x00"
+    resp += writeVarInt(keepAlive)
+    resp = writeLength(resp)
+    sendData += resp
 
 def Packet0x01(buff):
     if bot.joined:

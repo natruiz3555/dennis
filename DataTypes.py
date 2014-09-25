@@ -178,3 +178,5 @@ def writeShort(number):
 def writeUnsignedShort(number):
     return struct.pack("!H", number)
     
+def writeLength(data):
+	return writeVarInt(len(data)) + data
