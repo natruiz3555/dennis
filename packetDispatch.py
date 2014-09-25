@@ -21,8 +21,8 @@ def Packet0x02(buff):
         print("Chat:" + JSONData)
 
 def Packet0x03(buff):
-    Ageoftheworld = buff.readBool()
-    Timeofday = buff.readBool()
+    Ageoftheworld = buff.readLong()
+    Timeofday = buff.readLong()
 
 def Packet0x04(buff):
     EntityID = buff.readVarInt()
@@ -44,17 +44,12 @@ def Packet0x07(buff):
     LevelType = buff.readString()
 
 def Packet0x08(buff):
-    X = buff.readBool()
-    Y = buff.readBool()
-    Z = buff.readBool()
-    Yaw = buff.readBool()
-    Pitch = buff.readBool()
+    X = buff.readDouble()
+    Y = buff.readDouble()
+    Z = buff.readDouble()
+    Yaw = buff.readFloat()
+    Pitch = buff.readFloat()
     Flags = buff.readByte()
-    X = buff.readBool()
-    Y = buff.readBool()
-    Z = buff.readBool()
-    Y_ROT = buff.readBool()
-    X_ROT = buff.readBool()
 
 def Packet0x09(buff):
     Slot = buff.readByte()
@@ -231,12 +226,15 @@ def Packet0x25(buff):
     DestroyStage = buff.readByte()
 
 def Packet0x26(buff):
-    Skylightsent = buff.readBool()
-    Chunkcolumncount = buff.readVarInt()
-    CX = buff.readInt()
-    CZ = buff.readInt()
-    PBitmap = buff.readShort()
-    Data = buff.readString()
+	buff.string = ""
+#    Skylightsent = buff.readBool()
+#    Chunkcolumncount = buff.readVarInt()
+#    while Chunkcolumncount > 0:
+#        CX = buff.readInt()
+#        CZ = buff.readInt()
+#        PBitmap = buff.readShort()
+#        Data = buff.readString()
+#        Chunkcolumncount -= 1
 
 def Packet0x27(buff):
     X = buff.readBool()
@@ -464,26 +462,26 @@ def Packet0x43(buff):
 def Packet0x44(buff):
     Action = buff.readVarInt()
     if Action == 0:
-		Radios = buff.readDouble()
-	elif Action == 1:
-		OldRadius = buff.readDouble()
-		newRadius = buff.readDouble()
-		speed = buff.readVarLong()
-	elif Action == 2:
-		x = buff.readDouble()
-		z = buff.readDouble()
-	elif Action == 3:
-		x = buff.readDouble()
-		z = buff.readDouble()
-		oldRadius = buff.readDouble()
-		newRadius = buff.readDouble()
-		portalTeleBound = buff.readVarInt()
-		warningTime = buff.readVarInt()
-		warningBlocks = buff.readVarInt()
-	elif Action == 4:
-		warningTime = buff.readVarInt()
-	elif Action == 5:
-		wanringBlocks = buff.readVarInt()
+        Radios = buff.readDouble()
+    elif Action == 1:
+        OldRadius = buff.readDouble()
+        newRadius = buff.readDouble()
+        speed = buff.readVarLong()
+    elif Action == 2:
+        x = buff.readDouble()
+        z = buff.readDouble()
+    elif Action == 3:
+        x = buff.readDouble()
+        z = buff.readDouble()
+        oldRadius = buff.readDouble()
+        newRadius = buff.readDouble()
+        portalTeleBound = buff.readVarInt()
+        warningTime = buff.readVarInt()
+        warningBlocks = buff.readVarInt()
+    elif Action == 4:
+        warningTime = buff.readVarInt()
+    elif Action == 5:
+        wanringBlocks = buff.readVarInt()
 def Packet0x45(buff):
     Action = buff.readVarInt()
 def Packet0x46(buff):
