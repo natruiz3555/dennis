@@ -301,9 +301,11 @@ def Packet0x2F(buff):
     Slotdata = buff.readBool()
 
 def Packet0x30(buff):
+    slots = []
     WindowID = buff.readUnsignedByte()
     Count = buff.readShort()
-    Slotdata = buff.readArrayOfSlots()
+    while Count > 0:
+        slots.append(buff.readSlot())
 
 def Packet0x31(buff):
     WindowID = buff.readUnsignedByte()
