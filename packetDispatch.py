@@ -1,5 +1,9 @@
 import DataTypes
 from Bot import Bot
+from Crypto.Cipher import PKCS1_v1_5
+from Crypto.Cipher import AES
+from Crypto.Hash import SHA
+from Crypto.PublicKey import RSA
 bot = Bot()
 
 def Packet0x00(buff):
@@ -437,19 +441,23 @@ def Packet0x49(buff):
 def Packet0x00(buff):
     JSONResponse = buff.readString()
 
-def Packet0x01(buff):
-    Time = buff.readBool()
-
 def Packet0x00(buff):
     JSONData = buff.readString()
 
 def Packet0x01(buff):
-    ServerID = buff.readString()
-    Length = buff.readVarInt()
-    PublicKey = buff.readBool()
-    Length = buff.readVarInt()
-    VerifyToken = buff.readBool()
-
+	if bot.enc:
+		Time = buff.readBool()
+	else:
+		ServerID = buff.readString()
+		Length = buff.readVarInt()
+		PublicKey = buff.readByteArray()
+		Length = buff.readVarInt()
+		VerifyToken = buff.readByteArray()
+		bot.encryption = True
+		bot.cipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
+		bot.decipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
+		key2 = RSA.importKey(PublicKey)
+		key = PKCS1_v1_5.new(key2)
 
 def Packet0x03(buff):
     Threshold = buff.readVarInt()
