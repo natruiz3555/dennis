@@ -9,15 +9,6 @@ bot = Bot()
 def Packet0x00(buff):
     KeepAliveID = buff.readVarInt()
 
-def Packet0x01(buff):
-    EntityID = buff.readInt()
-    Gamemode = buff.readUnsignedByte()
-    Dimension = buff.readByte()
-    Difficulty = buff.readUnsignedByte()
-    MaxPlayers = buff.readUnsignedByte()
-    LevelType = buff.readString()
-    ReducedDebugInfo = buff.readBool()
-
 def Packet0x02(buff):
     if bot.loggedIn == False:
         bot.UUID = buff.readString()
@@ -312,7 +303,7 @@ def Packet0x2F(buff):
 def Packet0x30(buff):
     WindowID = buff.readUnsignedByte()
     Count = buff.readShort()
-    Slotdata = buff.readBool()
+    Slotdata = buff.readArrayOfSlots()
 
 def Packet0x31(buff):
     WindowID = buff.readUnsignedByte()
@@ -353,8 +344,11 @@ def Packet0x36(buff):
 
 def Packet0x37(buff):
     Count = buff.readVarInt()
-    Entry = buff.readString()
-    Value = buff.readVarInt()
+    while Count > 0:
+		Entry = buff.readString()
+		Value = buff.readVarInt()
+		bot.stats.append({"Entry":Entry, "Value":Value})
+		Count -= 1
 
 def Packet0x38(buff):
     Action = buff.readVarInt()
@@ -445,24 +439,34 @@ def Packet0x00(buff):
     JSONData = buff.readString()
 
 def Packet0x01(buff):
-	if bot.enc:
-		Time = buff.readBool()
+	if bot.joined:
+		if bot.enc:
+			Time = buff.readBool()
+		else:
+			print(buff.string.encode("hex"))
+			ServerID = buff.readString()
+			PublicKey = buff.readString()
+			VerifyToken = buff.readString()
+			bot.encryption = True
+			bot.cipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
+			bot.decipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
+			print(VerifyToken)
+			key2 = RSA.importKey(PublicKey)
+			key = PKCS1_v1_5.new(key2)
 	else:
-		ServerID = buff.readString()
-		Length = buff.readVarInt()
-		PublicKey = buff.readByteArray()
-		Length = buff.readVarInt()
-		VerifyToken = buff.readByteArray()
-		bot.encryption = True
-		bot.cipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
-		bot.decipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
-		key2 = RSA.importKey(PublicKey)
-		key = PKCS1_v1_5.new(key2)
+		EntityID = buff.readInt()
+		Gamemode = buff.readUnsignedByte()
+		Dimension = buff.readByte()
+		Difficulty = buff.readUnsignedByte()
+		MaxPlayers = buff.readUnsignedByte()
+		LevelType = buff.readString()
+		ReducedDebugInfo = buff.readBool()
+		bot.joined = True
 
-def Packet0x03(buff):
-    Threshold = buff.readVarInt()
-    print("Enabling Compression.")
-    DataTypes.compress = True
+#def Packet0x03(buff):
+#    Threshold = buff.readVarInt()
+#    print("Enabling Compression.")
+#    DataTypes.compress = True
 
 
 
