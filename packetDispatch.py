@@ -1,4 +1,6 @@
 import DataTypes
+from Bot import Bot
+bot = Bot()
 
 def Packet0x00(buff):
     KeepAliveID = buff.readVarInt()
@@ -10,28 +12,35 @@ def Packet0x01(buff):
     Difficulty = buff.readUnsignedByte()
     MaxPlayers = buff.readUnsignedByte()
     LevelType = buff.readString()
-    ReducedDebugInfo = buff.readBoolean()
+    ReducedDebugInfo = buff.readBool()
 
 def Packet0x02(buff):
-    JSONData = buff.readString()
-    Position = buff.readByte()
+    if bot.loggedIn == False:
+        bot.UUID = buff.readString()
+        bot.Username = buff.readString()
+        print("UUID:" + bot.UUID)
+        bot.loggedIn = True
+    else:
+        JSONData = buff.readString()
+        Position = buff.readByte()
+        print("Chat:" + JSONData)
 
 def Packet0x03(buff):
-    Ageoftheworld = buff.readBoolean()
-    Timeofday = buff.readBoolean()
+    Ageoftheworld = buff.readBool()
+    Timeofday = buff.readBool()
 
 def Packet0x04(buff):
     EntityID = buff.readVarInt()
     Slot = buff.readShort()
-    Item = buff.readBoolean()
+    Item = buff.readBool()
 
 def Packet0x05(buff):
     Location = buff.readPosition()
 
 def Packet0x06(buff):
-    Health = buff.readBoolean()
+    Health = buff.readBool()
     Food = buff.readVarInt()
-    FoodSaturation = buff.readBoolean()
+    FoodSaturation = buff.readBool()
 
 def Packet0x07(buff):
     Dimension = buff.readInt()
@@ -40,17 +49,17 @@ def Packet0x07(buff):
     LevelType = buff.readString()
 
 def Packet0x08(buff):
-    X = buff.readBoolean()
-    Y = buff.readBoolean()
-    Z = buff.readBoolean()
-    Yaw = buff.readBoolean()
-    Pitch = buff.readBoolean()
+    X = buff.readBool()
+    Y = buff.readBool()
+    Z = buff.readBool()
+    Yaw = buff.readBool()
+    Pitch = buff.readBool()
     Flags = buff.readByte()
-    X = buff.readBoolean()
-    Y = buff.readBoolean()
-    Z = buff.readBoolean()
-    Y_ROT = buff.readBoolean()
-    X_ROT = buff.readBoolean()
+    X = buff.readBool()
+    Y = buff.readBool()
+    Z = buff.readBool()
+    Y_ROT = buff.readBool()
+    X_ROT = buff.readBool()
 
 def Packet0x09(buff):
     Slot = buff.readByte()
@@ -65,7 +74,7 @@ def Packet0x0B(buff):
 
 def Packet0x0C(buff):
     EntityID = buff.readVarInt()
-    PlayerUUID = buff.readBoolean()
+    PlayerUUID = buff.readBool()
     X = buff.readInt()
     Y = buff.readInt()
     Z = buff.readInt()
@@ -133,13 +142,13 @@ def Packet0x15(buff):
     DX = buff.readByte()
     DY = buff.readByte()
     DZ = buff.readByte()
-    OnGround = buff.readBoolean()
+    OnGround = buff.readBool()
 
 def Packet0x16(buff):
     EntityID = buff.readVarInt()
     Yaw = buff.readByte()
     Pitch = buff.readByte()
-    OnGround = buff.readBoolean()
+    OnGround = buff.readBool()
 
 def Packet0x17(buff):
     EntityID = buff.readVarInt()
@@ -148,7 +157,7 @@ def Packet0x17(buff):
     DZ = buff.readByte()
     Yaw = buff.readByte()
     Pitch = buff.readByte()
-    OnGround = buff.readBoolean()
+    OnGround = buff.readBool()
 
 def Packet0x18(buff):
     EntityID = buff.readVarInt()
@@ -157,7 +166,7 @@ def Packet0x18(buff):
     Z = buff.readInt()
     Yaw = buff.readByte()
     Pitch = buff.readByte()
-    OnGround = buff.readBoolean()
+    OnGround = buff.readBool()
 
 def Packet0x19(buff):
     EntityID = buff.readVarInt()
@@ -170,7 +179,7 @@ def Packet0x1A(buff):
 def Packet0x1B(buff):
     EntityID = buff.readInt()
     VehicleID = buff.readInt()
-    Leash = buff.readBoolean()
+    Leash = buff.readBool()
 
 def Packet0x1C(buff):
     EntityID = buff.readVarInt()
@@ -181,35 +190,35 @@ def Packet0x1D(buff):
     EffectID = buff.readByte()
     Amplifier = buff.readByte()
     Duration = buff.readVarInt()
-    HideParticles = buff.readBoolean()
+    HideParticles = buff.readBool()
 
 def Packet0x1E(buff):
     EntityID = buff.readVarInt()
     EffectID = buff.readByte()
 
 def Packet0x1F(buff):
-    Experiencebar = buff.readBoolean()
+    Experiencebar = buff.readBool()
     Level = buff.readVarInt()
     TotalExperience = buff.readVarInt()
 
 def Packet0x20(buff):
     EntityID = buff.readVarInt()
     Count = buff.readInt()
-    Properties = buff.readBoolean()
+    Properties = buff.readBool()
 
 def Packet0x21(buff):
     ChunkX = buff.readInt()
     ChunkZ = buff.readInt()
-    GroundUpcontinuous = buff.readBoolean()
-    Primarybitmap = buff.readBoolean()
+    GroundUpcontinuous = buff.readBool()
+    Primarybitmap = buff.readBool()
     Size = buff.readVarInt()
-    Data = buff.readBoolean()
+    Data = buff.readBool()
 
 def Packet0x22(buff):
     ChunkX = buff.readInt()
     ChunkZ = buff.readInt()
     Recordcount = buff.readVarInt()
-    Records = buff.readBoolean()
+    Records = buff.readBool()
 
 def Packet0x23(buff):
     Location = buff.readPosition()
@@ -227,52 +236,52 @@ def Packet0x25(buff):
     DestroyStage = buff.readByte()
 
 def Packet0x26(buff):
-    Skylightsent = buff.readBoolean()
+    Skylightsent = buff.readBool()
     Chunkcolumncount = buff.readVarInt()
-    Metainformation = buff.readBoolean()
-    Data = buff.readBoolean()
+    Metainformation = buff.readBool()
+    Data = buff.readBool()
 
 def Packet0x27(buff):
-    X = buff.readBoolean()
-    Y = buff.readBoolean()
-    Z = buff.readBoolean()
-    Radius = buff.readBoolean()
+    X = buff.readBool()
+    Y = buff.readBool()
+    Z = buff.readBool()
+    Radius = buff.readBool()
     Recordcount = buff.readInt()
-    Records = buff.readBoolean()
-    PlayerMotionX = buff.readBoolean()
-    PlayerMotionY = buff.readBoolean()
-    PlayerMotionZ = buff.readBoolean()
+    Records = buff.readBool()
+    PlayerMotionX = buff.readBool()
+    PlayerMotionY = buff.readBool()
+    PlayerMotionZ = buff.readBool()
 
 def Packet0x28(buff):
     EffectID = buff.readInt()
     Location = buff.readPosition()
     Data = buff.readInt()
-    Disablerelativevolume = buff.readBoolean()
+    Disablerelativevolume = buff.readBool()
 
 def Packet0x29(buff):
     Soundname = buff.readString()
     EffectpositionX = buff.readInt()
     EffectpositionY = buff.readInt()
     EffectpositionZ = buff.readInt()
-    Volume = buff.readBoolean()
+    Volume = buff.readBool()
     Pitch = buff.readUnsignedByte()
 
 def Packet0x2A(buff):
     ParticleId = buff.readInt()
-    LongDistance = buff.readBoolean()
-    X = buff.readBoolean()
-    Y = buff.readBoolean()
-    Z = buff.readBoolean()
-    OffsetX = buff.readBoolean()
-    OffsetY = buff.readBoolean()
-    OffsetZ = buff.readBoolean()
-    Particledata = buff.readBoolean()
+    LongDistance = buff.readBool()
+    X = buff.readBool()
+    Y = buff.readBool()
+    Z = buff.readBool()
+    OffsetX = buff.readBool()
+    OffsetY = buff.readBool()
+    OffsetZ = buff.readBool()
+    Particledata = buff.readBool()
     Numberofparticles = buff.readInt()
     Data = buff.readArrayOfVarInt()
 
 def Packet0x2B(buff):
     Reason = buff.readUnsignedByte()
-    Value = buff.readBoolean()
+    Value = buff.readBool()
 
 def Packet0x2C(buff):
     EntityID = buff.readVarInt()
@@ -284,7 +293,7 @@ def Packet0x2C(buff):
 def Packet0x2D(buff):
     Windowid = buff.readUnsignedByte()
     InventoryType = buff.readString()
-    Windowtitle = buff.readBoolean()
+    Windowtitle = buff.readBool()
     NumberofSlots = buff.readUnsignedByte()
     EntityID = buff.readInt()
 
@@ -294,12 +303,12 @@ def Packet0x2E(buff):
 def Packet0x2F(buff):
     WindowID = buff.readByte()
     Slot = buff.readShort()
-    Slotdata = buff.readBoolean()
+    Slotdata = buff.readBool()
 
 def Packet0x30(buff):
     WindowID = buff.readUnsignedByte()
     Count = buff.readShort()
-    Slotdata = buff.readBoolean()
+    Slotdata = buff.readBool()
 
 def Packet0x31(buff):
     WindowID = buff.readUnsignedByte()
@@ -309,48 +318,48 @@ def Packet0x31(buff):
 def Packet0x32(buff):
     WindowID = buff.readUnsignedByte()
     Actionnumber = buff.readShort()
-    Accepted = buff.readBoolean()
+    Accepted = buff.readBool()
 
 def Packet0x33(buff):
     Location = buff.readPosition()
-    Line1 = buff.readBoolean()
-    Line2 = buff.readBoolean()
-    Line3 = buff.readBoolean()
-    Line4 = buff.readBoolean()
+    Line1 = buff.readBool()
+    Line2 = buff.readBool()
+    Line3 = buff.readBool()
+    Line4 = buff.readBool()
 
 def Packet0x34(buff):
     ItemDamage = buff.readVarInt()
     Scale = buff.readByte()
     Length = buff.readVarInt()
-    Icons = buff.readBoolean()
+    Icons = buff.readBool()
     Columns = buff.readByte()
     Rows = buff.readByte()
     X = buff.readByte()
     Y = buff.readByte()
     Length = buff.readVarInt()
-    Data = buff.readBoolean()
+    Data = buff.readBool()
 
 def Packet0x35(buff):
     Location = buff.readPosition()
     Action = buff.readUnsignedByte()
-    NBTData = buff.readBoolean()
+    NBTData = buff.readBool()
 
 def Packet0x36(buff):
     Location = buff.readPosition()
 
 def Packet0x37(buff):
     Count = buff.readVarInt()
-    Entry = buff.readBoolean()
+    Entry = buff.readString()
     Value = buff.readVarInt()
 
 def Packet0x38(buff):
     Action = buff.readVarInt()
     Length = buff.readVarInt()
-    UUID = buff.readBoolean()
+    UUID = buff.readBool()
 def Packet0x39(buff):
     Flags = buff.readByte()
-    Flyingspeed = buff.readBoolean()
-    Walkingspeed = buff.readBoolean()
+    Flyingspeed = buff.readBool()
+    Walkingspeed = buff.readBool()
 
 def Packet0x3A(buff):
     Count = buff.readVarInt()
@@ -382,11 +391,11 @@ def Packet0x3E(buff):
     NameTagVisibility = buff.readString()
     Color = buff.readByte()
     Playercount = buff.readVarInt()
-    Players = buff.readBoolean()
+    Players = buff.readBool()
 
 def Packet0x3F(buff):
     Channel = buff.readString()
-    Data = buff.readBoolean()
+    Data = buff.readBool()
 
 def Packet0x40(buff):
     Reason = buff.readString()
@@ -414,8 +423,8 @@ def Packet0x46(buff):
     print("Got compression")
 
 def Packet0x47(buff):
-    Header = buff.readBoolean()
-    Footer = buff.readBoolean()
+    Header = buff.readBool()
+    Footer = buff.readBool()
 
 def Packet0x48(buff):
     URL = buff.readString()
@@ -423,13 +432,13 @@ def Packet0x48(buff):
 
 def Packet0x49(buff):
     EntityID = buff.readVarInt()
-    Tag = buff.readBoolean()
+    Tag = buff.readBool()
 
 def Packet0x00(buff):
     JSONResponse = buff.readString()
 
 def Packet0x01(buff):
-    Time = buff.readBoolean()
+    Time = buff.readBool()
 
 def Packet0x00(buff):
     JSONData = buff.readString()
@@ -437,13 +446,10 @@ def Packet0x00(buff):
 def Packet0x01(buff):
     ServerID = buff.readString()
     Length = buff.readVarInt()
-    PublicKey = buff.readBoolean()
+    PublicKey = buff.readBool()
     Length = buff.readVarInt()
-    VerifyToken = buff.readBoolean()
+    VerifyToken = buff.readBool()
 
-def Packet0x02(buff):
-    UUID = buff.readString()
-    Username = buff.readString()
 
 def Packet0x03(buff):
     Threshold = buff.readVarInt()
@@ -531,6 +537,5 @@ pDispatch = {
     '0x01':Packet0x01,
     '0x00':Packet0x00,
     '0x01':Packet0x01,
-    '0x02':Packet0x02,
     '0x03':Packet0x03,
 }
