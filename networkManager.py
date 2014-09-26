@@ -32,7 +32,7 @@ def login():
 
 
 login()
-
+t=0
 while True:
 	try:
 		buff.addRaw(s.recv(1024))
@@ -47,6 +47,7 @@ while True:
 		while len(a) < 4:
 			a = "0x0" + a[2:]
 		a = a.upper().replace("X", "x")
+		#print("+" + a)
 		packetDispatch.pDispatch[a](packet)
 
 
