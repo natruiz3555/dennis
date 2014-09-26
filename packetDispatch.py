@@ -22,6 +22,7 @@ def Packet0x02(buff):
         print("\tUUID: " + bot.UUID)
         print("\tUsername: " + bot.Username)
         bot.loggedIn = True
+        print("Login Successfull")
     else:
         JSONData = buff.readString()
         Position = buff.readByte()
@@ -486,6 +487,7 @@ def Packet0x3F(buff):
     Data = buff.readString()
 def Packet0x40(buff):
     Reason = buff.readString()
+    print("Kicked from Server:" + Reason)
 
 def Packet0x41(buff):
     Difficulty = buff.readUnsignedByte()
