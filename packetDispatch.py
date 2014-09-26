@@ -7,43 +7,72 @@ from DataTypes import *
 sendData = ""
 bot = Bot()
 
+# Keep alive
 def Packet0x00(buff):
     KeepAliveID = buff.readVarInt()
     print("Keep alive")
 
+# Alive: Chat update
+# Dead: login info
 def Packet0x02(buff):
     if bot.loggedIn == False:
         bot.UUID = buff.readString()
         bot.Username = buff.readString()
-        print("UUID:" + bot.UUID)
+        print("Logged in with info:")
+        print("\tUUID: " + bot.UUID)
+        print("\tUsername: " + bot.Username)
         bot.loggedIn = True
     else:
         JSONData = buff.readString()
         Position = buff.readByte()
         print("Chat:" + JSONData)
 
+# Time update
 def Packet0x03(buff):
-    Ageoftheworld = buff.readLong()
-    Timeofday = buff.readLong()
+    worldAge = buff.readLong()
+    timeOfDay = buff.readLong()
+    print("World age: " + str(worldAge))
+    print("Time of day: " + str(timeOfDay))
 
+# Entity Equipment
 def Packet0x04(buff):
     EntityID = buff.readVarInt()
     Slot = buff.readShort()
     Item = buff.readBool()
+    print("Entity:")
+    print("\tID: "+ str(EntityID))
+    print("\tSlot: "+ str(Slot))
+    print("\tItem: "+str(Item))
 
+# Spawn Position 
 def Packet0x05(buff):
     Location = buff.readPosition()
+    print("Spawning at location: " + str(Location))
 
+# Update Health
 def Packet0x06(buff):
     Health = buff.readBool()
     Food = buff.readVarInt()
     FoodSaturation = buff.readBool()
+    print("Current health: " + str(Health))
+    print("Current food: " + str(Food))
+    print("Current food saturation: " + str(FoodSaturation))
 
+# Respawn
 def Packet0x07(buff):
+    # -1: The Nether, 0: The Overworld, 1: The End 
     Dimension = buff.readInt()
+    #  0 thru 3 for Peaceful, Easy, Normal, Hard. 
     Difficulty = buff.readUnsignedByte()
+    # 0: survival, 1: creative, 2: adventure. The hardcore flag is not included 
     Gamemode = buff.readUnsignedByte()
+    # default, flat, largeBiomes, amplified, default_1_1
     LevelType = buff.readString()
+    print("Current dimension: "+str(Dimension))
+    print("Current difficulty: "+str(Difficulty))
+    print("Current gamemode: " + str(Gamemode))
+    print("Current leveltype:" + str(LevelType))
+    
 
 def Packet0x08(buff):
     X = buff.readDouble()
