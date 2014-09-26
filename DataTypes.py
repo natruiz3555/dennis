@@ -1,4 +1,5 @@
 import struct
+import Misc
 import zlib
 compress = False
 class Buffer():
@@ -30,7 +31,7 @@ class Buffer():
             if compress:
                 buff = self.readBuffer(length)
                 buff.readVarInt()
-                buff.string = zlib.decompress(buff.string)
+                buff.string = zlib.decompress(buff.string, zlib.MAXWBITS)
                 return buff
             else:
                 return self.readBuffer(length)
@@ -180,3 +181,5 @@ def writeShort(number):
 def writeUnsignedShort(number):
     return struct.pack("!H", number)
     
+def writeLength(data):
+	return writeVarInt(len(data)) + data

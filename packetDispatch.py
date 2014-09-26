@@ -1,37 +1,30 @@
-import DataTypes
 from Bot import Bot
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA
 from Crypto.PublicKey import RSA
+from DataTypes import *
+sendData = ""
 bot = Bot()
 
 def Packet0x00(buff):
     KeepAliveID = buff.readVarInt()
-
-def Packet0x01(buff):
-    EntityID = buff.readInt()
-    Gamemode = buff.readUnsignedByte()
-    Dimension = buff.readByte()
-    Difficulty = buff.readUnsignedByte()
-    MaxPlayers = buff.readUnsignedByte()
-    LevelType = buff.readString()
-    ReducedDebugInfo = buff.readBool()
+    print("Keep alive")
 
 def Packet0x02(buff):
     if bot.loggedIn == False:
         bot.UUID = buff.readString()
         bot.Username = buff.readString()
-        print("UUID:" + bot.UUID)
         bot.loggedIn = True
+        print("Login Successfull")
     else:
         JSONData = buff.readString()
         Position = buff.readByte()
         print("Chat:" + JSONData)
 
 def Packet0x03(buff):
-    Ageoftheworld = buff.readBool()
-    Timeofday = buff.readBool()
+    Ageoftheworld = buff.readLong()
+    Timeofday = buff.readLong()
 
 def Packet0x04(buff):
     EntityID = buff.readVarInt()
@@ -53,17 +46,12 @@ def Packet0x07(buff):
     LevelType = buff.readString()
 
 def Packet0x08(buff):
-    X = buff.readBool()
-    Y = buff.readBool()
-    Z = buff.readBool()
-    Yaw = buff.readBool()
-    Pitch = buff.readBool()
+    X = buff.readDouble()
+    Y = buff.readDouble()
+    Z = buff.readDouble()
+    Yaw = buff.readFloat()
+    Pitch = buff.readFloat()
     Flags = buff.readByte()
-    X = buff.readBool()
-    Y = buff.readBool()
-    Z = buff.readBool()
-    Y_ROT = buff.readBool()
-    X_ROT = buff.readBool()
 
 def Packet0x09(buff):
     Slot = buff.readByte()
@@ -136,7 +124,10 @@ def Packet0x12(buff):
 
 def Packet0x13(buff):
     Count = buff.readVarInt()
-    EntityIDs = buff.readArrayOfVarInt()
+    EntityIDs = []
+    while Count > 0:
+		EntityIDs.append(buff.readVarInt())
+		Count -= 1
 
 def Packet0x14(buff):
     EntityID = buff.readVarInt()
@@ -240,10 +231,15 @@ def Packet0x25(buff):
     DestroyStage = buff.readByte()
 
 def Packet0x26(buff):
-    Skylightsent = buff.readBool()
-    Chunkcolumncount = buff.readVarInt()
-    Metainformation = buff.readBool()
-    Data = buff.readBool()
+	buff.string = ""
+#    Skylightsent = buff.readBool()
+#    Chunkcolumncount = buff.readVarInt()
+#    while Chunkcolumncount > 0:
+#        CX = buff.readInt()
+#        CZ = buff.readInt()
+#        PBitmap = buff.readShort()
+#        Data = buff.readString()
+#        Chunkcolumncount -= 1
 
 def Packet0x27(buff):
     X = buff.readBool()
@@ -307,12 +303,15 @@ def Packet0x2E(buff):
 def Packet0x2F(buff):
     WindowID = buff.readByte()
     Slot = buff.readShort()
-    Slotdata = buff.readBool()
+    Slotdata = buff.readSlot()
 
 def Packet0x30(buff):
+    slots = []
     WindowID = buff.readUnsignedByte()
     Count = buff.readShort()
-    Slotdata = buff.readBool()
+    while Count > 0:
+        slots.append(buff.readSlot())
+        Count -= 1
 
 def Packet0x31(buff):
     WindowID = buff.readUnsignedByte()
@@ -353,17 +352,73 @@ def Packet0x36(buff):
 
 def Packet0x37(buff):
     Count = buff.readVarInt()
-    Entry = buff.readString()
-    Value = buff.readVarInt()
+    while Count > 0:
+        Entry = buff.readString()
+        Value = buff.readVarInt()
+        bot.stats.append({"Entry":Entry, "Value":Value})
+        Count -= 1
 
 def Packet0x38(buff):
+    '''
     Action = buff.readVarInt()
+    if Action == 0:
+        length = buff.readVarInt()
+        UUID =  buff.readLong() + buff.readLong()
+        while length > 0:
+            props = []
+            name = buff.readString()
+            numofPro = buff.readVarInt()
+            while numofPro > 0:
+                prop = []
+                pname = buff.readString()
+                prop.append(pname)
+                pvalue = buff.readString()
+                prop.append(pbalue)
+                isSinged = buff.readBool()
+                if isSinged:
+                    signic = buff.readString()
+                    prop.append(signic)
+                props.append(prop)
+                numofPro -= 1
+            length -= 1
+            gamemode = buff.readVarInt()
+            ping = buff.readVarInt()
+            if buff.readBool():
+				displayName = buff.readString()
+				posit = buff.readByte()
+    elif Action == 1:
+        length = buff.readVarInt()
+        UUID =  buff.readLong() + buff.readLong()
+        while length > 0:
+            gamemode = buff.readVarInt()
+            length -= 1
+    elif Action == 2:
+        length = buff.readVarInt()
+        UUID =  buff.readLong() + buff.readLong()
+        while length > 0:
+            ping = buff.readVarInt()
+            length -= 1
+    elif Action == 3:
+        length = buff.readVarInt()
+        UUID =  buff.readLong() + buff.readLong()
+        while length > 0:
+            hasDisplayName = buff.readBool()
+            if hasDisplayName:
+                displayName = buff.readString()
+                posit = buff.readByte()
+            length -= 1
+    elif Action == 4:
+        length = buff.readVarInt()
+        UUID =  buff.readLong() + buff.readLong()
+        print("EROROROROROR")
     Length = buff.readVarInt()
-    UUID = buff.readBool()
+    UUID = buff.readBool()'''
+    pass
+
 def Packet0x39(buff):
     Flags = buff.readByte()
-    Flyingspeed = buff.readBool()
-    Walkingspeed = buff.readBool()
+    Flyingspeed = buff.readFloat()
+    Walkingspeed = buff.readFloat()
 
 def Packet0x3A(buff):
     Count = buff.readVarInt()
@@ -399,10 +454,10 @@ def Packet0x3E(buff):
 
 def Packet0x3F(buff):
     Channel = buff.readString()
-    Data = buff.readBool()
-
+    Data = buff.readString()
 def Packet0x40(buff):
     Reason = buff.readString()
+    print("Kicked from Server:" + Reason)
 
 def Packet0x41(buff):
     Difficulty = buff.readUnsignedByte()
@@ -420,6 +475,27 @@ def Packet0x43(buff):
 
 def Packet0x44(buff):
     Action = buff.readVarInt()
+    if Action == 0:
+        Radios = buff.readDouble()
+    elif Action == 1:
+        OldRadius = buff.readDouble()
+        newRadius = buff.readDouble()
+        speed = buff.readVarLong()
+    elif Action == 2:
+        x = buff.readDouble()
+        z = buff.readDouble()
+    elif Action == 3:
+        x = buff.readDouble()
+        z = buff.readDouble()
+        oldRadius = buff.readDouble()
+        newRadius = buff.readDouble()
+        portalTeleBound = buff.readVarInt()
+        warningTime = buff.readVarInt()
+        warningBlocks = buff.readVarInt()
+    elif Action == 4:
+        warningTime = buff.readVarInt()
+    elif Action == 5:
+        wanringBlocks = buff.readVarInt()
 def Packet0x45(buff):
     Action = buff.readVarInt()
 def Packet0x46(buff):
@@ -439,30 +515,42 @@ def Packet0x49(buff):
     Tag = buff.readBool()
 
 def Packet0x00(buff):
-    JSONResponse = buff.readString()
-
-def Packet0x00(buff):
-    JSONData = buff.readString()
+    global sendData
+    keepAlive = buff.readVarInt()
+    resp = "\x00"
+    resp += writeVarInt(keepAlive)
+    resp = writeLength(resp)
+    sendData += resp
 
 def Packet0x01(buff):
-	if bot.enc:
-		Time = buff.readBool()
-	else:
-		ServerID = buff.readString()
-		Length = buff.readVarInt()
-		PublicKey = buff.readByteArray()
-		Length = buff.readVarInt()
-		VerifyToken = buff.readByteArray()
-		bot.encryption = True
-		bot.cipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
-		bot.decipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
-		key2 = RSA.importKey(PublicKey)
-		key = PKCS1_v1_5.new(key2)
+    if bot.joined:
+        if bot.enc:
+            Time = buff.readBool()
+        else:
+            print(buff.string.encode("hex"))
+            ServerID = buff.readString()
+            PublicKey = buff.readString()
+            VerifyToken = buff.readString()
+            bot.encryption = True
+            bot.cipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
+            bot.decipher = AES.new(bot.secret, AES.MODE_CFB, bot.secret)
+            print(VerifyToken)
+            key2 = RSA.importKey(PublicKey)
+            key = PKCS1_v1_5.new(key2)
+    else:
+        EntityID = buff.readInt()
+        Gamemode = buff.readUnsignedByte()
+        Dimension = buff.readByte()
+        Difficulty = buff.readUnsignedByte()
+        MaxPlayers = buff.readUnsignedByte()
+        LevelType = buff.readString()
+        ReducedDebugInfo = buff.readBool()
+        bot.joined = True
 
-def Packet0x03(buff):
-    Threshold = buff.readVarInt()
-    print("Enabling Compression.")
-    DataTypes.compress = True
+#def Packet0x03(buff):
+#    Threshold = buff.readVarInt()
+#    print("Enabling Compression.")
+#    DataTypes.compress = True
 
 
 

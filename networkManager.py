@@ -2,7 +2,7 @@ import socket
 import zlib
 import DataTypes
 import time
-from packetDispatch import *
+import packetDispatch
 
 
 buff = DataTypes.Buffer()
@@ -12,7 +12,6 @@ PORT = 25565
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((HOST, PORT))
-sendData = ''
 s.setblocking(0)
 
 def writeLength(data):
@@ -35,7 +34,7 @@ def login():
 
 
 login()
-
+t=0
 while True:
     try:
         buff.addRaw(s.recv(16))
@@ -52,5 +51,6 @@ while True:
         a = a.replace("f", "F")
         print("+" + a)
         pDispatch[a](packet)
+
 
 
