@@ -1,4 +1,8 @@
 from Bot import Bot
+from Entity import Entity
+from World import World
+from Location import Location
+from Effect import Effect
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA
@@ -30,49 +34,44 @@ def Packet0x02(buff):
 
 # Time update
 def Packet0x03(buff):
-    worldAge = buff.readLong()
-    timeOfDay = buff.readLong()
-    print("World age: " + str(worldAge))
-    print("Time of day: " + str(timeOfDay))
+    bot.world.worldAge = buff.readLong()
+    bot.world.timeOfDay = buff.readLong()
 
 # Entity Equipment
 def Packet0x04(buff):
     EntityID = buff.readVarInt()
     Slot = buff.readShort()
     Item = buff.readBool()
-    print("Entity:")
-    print("\tID: "+ str(EntityID))
-    print("\tSlot: "+ str(Slot))
-    print("\tItem: "+str(Item))
+    
+    found = False;
+    for entity in bot.world.entities:
+        if entity.ID == EntityID:
+            entity.slot = Slot;
+            entity.item = Item;
+            found = True;
+    if found == False:
+        entity = Entity();
+        entity.ID = EntityID;
+        entity.slot = Slot;
+        entity.item = Item;
+        bot.world.entities.append(entity);
 
 # Spawn Position 
 def Packet0x05(buff):
-    Location = buff.readPosition()
-    print("Spawning at location: " + str(Location))
+    Bot.location = buff.readPosition();
 
 # Update Health
 def Packet0x06(buff):
-    Health = buff.readBool()
-    Food = buff.readVarInt()
-    FoodSaturation = buff.readBool()
-    print("Current health: " + str(Health))
-    print("Current food: " + str(Food))
-    print("Current food saturation: " + str(FoodSaturation))
+    bot.health = buff.readBool();
+    bot.food = buff.readVarInt();
+    bot.foodSaturation = buff.readBool();
 
 # Respawn
 def Packet0x07(buff):
-    # -1: The Nether, 0: The Overworld, 1: The End 
-    Dimension = buff.readInt()
-    #  0 thru 3 for Peaceful, Easy, Normal, Hard. 
-    Difficulty = buff.readUnsignedByte()
-    # 0: survival, 1: creative, 2: adventure. The hardcore flag is not included 
-    Gamemode = buff.readUnsignedByte()
-    # default, flat, largeBiomes, amplified, default_1_1
-    LevelType = buff.readString()
-    print("Current dimension: "+str(Dimension))
-    print("Current difficulty: "+str(Difficulty))
-    print("Current gamemode: " + str(Gamemode))
-    print("Current leveltype:" + str(LevelType))
+    Bot.world.dimension = buff.readInt()
+    bot.world.difficulty = buff.readUnsignedByte()
+    bot.gamemode = buff.readUnsignedByte()
+    bot.world.levelType = buff.readString()
     
 
 def Packet0x08(buff):
