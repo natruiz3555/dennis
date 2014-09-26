@@ -70,6 +70,9 @@ class Buffer():
             elif (dataType == 3): metadata[index] = self.readFloat()
             elif (dataType == 4): metadata[index] = self.readString()
             elif (dataType == 5): metadata[index] = self.readSlot()
+            elif (dataType == 6): metadata[index] = (self.readInt(), self.readInt(), self.readInt())
+            elif (dataType == 7): metadata[index] = (self.readFloat(), self.readFloat(), self.readFloat())
+            else: raise Exception("Unknown enitiy metadata type.")
             key = self.readUnsignedByte()
         return metadata
     
