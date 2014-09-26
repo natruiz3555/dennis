@@ -54,7 +54,7 @@ class Buffer():
         if slot.dataValue == -1: return None
         slot.count = self.readByte()
         slot.damage = self.readShort()
-        nbtSize = self.readShort()
+        nbtSize = self.readByte()
         if nbtSize == 0: return slot
         slot.nbt = self.read(nbtSize)
         return slot
