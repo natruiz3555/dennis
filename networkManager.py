@@ -66,3 +66,6 @@ while True:
 			a = "0x0" + a[2:]
 		a = a.upper().replace("X", "x")
 		getattr(network.dispatch, "Packet"+a)(packet)
+		if network.dispatch.bot.comp:
+			network.buff.comp = True
+			network.buff.compThreshold = network.dispatch.bot.compThreshold

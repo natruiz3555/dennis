@@ -33,10 +33,14 @@ class Buffer():
 		length = self.readVarInt()
 		if length <= len(self.string):
 			if self.comp:
-				if self.readVarInt() >= self.compThreshold:
-					buff = self.readBuffer(length)
-					buff.string = zlib.decompress(buff.string, zlib.MAX_WBITS)
+				psize = self.readVarInt()
+				if psize != 0:
+					buff = self.readBuffer(length-2)
+					print("Decompressing")
+					buff.string = zlib.decompress(buff.string, -zlib.MAX_WBITS)
 					return buff
+				else:
+					return self.readBuffer(length-1)
 			else:
 				return self.readBuffer(length)
 		else:
