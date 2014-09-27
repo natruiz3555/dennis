@@ -56,7 +56,7 @@ while True:
 
 	for p in network.dispatch.sendData:
 		network.send(p)
-		PacketDispatch.sendData.remove(p)
+		network.dispatch.sendData.remove(p)
 	packet = network.buff.getNextPacket()
 	if packet:
 		a = hex(packet.readVarInt())
@@ -64,4 +64,4 @@ while True:
 			a = "0x0" + a[2:]
 		a = a.upper().replace("X", "x")
 		network.dispatch.pDispatch[a](packet)
-	print(bot.UUID)
+	print(network.dispatch.bot.UUID)
