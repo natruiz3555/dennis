@@ -611,6 +611,7 @@ class PacketDispatch():
 		resp = "\x00"
 		resp += writeVarInt(keepAlive)
 		resp = writeLength(resp)
+		print("Keep alive")
 		self.sendData.append(resp)
 
 	def Packet0x01(self, buff):

@@ -57,8 +57,12 @@ while True:
 		pass
 
 	for p in network.dispatch.sendData:
-		network.send(p)
-		network.dispatch.sendData.remove(p)
+		if network.dispatch.bot.comp:
+			
+		else:	
+			print("Sending:" + p.encode("hex"))
+			network.send(p)
+			network.dispatch.sendData.remove(p)
 	packet = network.buff.getNextPacket()
 	if packet:
 		a = hex(packet.readVarInt())
