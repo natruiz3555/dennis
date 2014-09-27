@@ -5,6 +5,9 @@ compress = False
 from Location import Location
 class Buffer():
 	string = ""
+	enc = False
+	comp = False
+	compThreshold = 0
 	
 	def read(self, count):
 		if count > len(self.string):
@@ -29,11 +32,11 @@ class Buffer():
 		tmp = self.string
 		length = self.readVarInt()
 		if length <= len(self.string):
-			if compress:
-				buff = self.readBuffer(length)
-				buff.readVarInt()
-				buff.string = zlib.decompress(buff.string, zlib.MAX_WBITS)
-				return buff
+			if self.comp:
+				if self.readVarInt() >= self.compThreshold:
+					buff = self.readBuffer(length)
+					buff.string = zlib.decompress(buff.string, zlib.MAX_WBITS)
+					return buff
 			else:
 				return self.readBuffer(length)
 		else:
