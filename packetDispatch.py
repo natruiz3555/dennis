@@ -42,7 +42,6 @@ class PacketDispatch():
 		if self.bot.comp == False:
 			self.bot.comp = True
 			self.bot.compThreshold = buff.readVarInt()
-			print("Enabled Compression")
 		else:
 			self.bot.world.worldAge = buff.readLong()
 			self.bot.world.timeOfDay = buff.readLong()
@@ -610,8 +609,6 @@ class PacketDispatch():
 		keepAlive = buff.readVarInt()
 		resp = "\x00"
 		resp += writeVarInt(keepAlive)
-		resp = writeLength(resp)
-		print("Keep alive")
 		self.sendData.append(resp)
 
 	def Packet0x01(self, buff):

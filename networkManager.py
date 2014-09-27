@@ -29,6 +29,9 @@ class NetworkManager():
 		
 	def writeLength(self, data):
 		return DataTypes.writeVarInt(len(data)) + data
+		
+	def writeLengthCompression(self, data):
+		return DataTypes.writeVarInt(len(data)), data
 
 	def login(self):
 		global sendData
@@ -37,12 +40,10 @@ class NetworkManager():
 		packet += DataTypes.writeString(self.HOST)
 		packet += DataTypes.writeUnsignedShort(self.PORT)
 		packet += DataTypes.writeVarInt(2)
-		packet = self.writeLength(packet)
 		self.dispatch.sendData.append(packet)
 		#Next Packet
 		packet = '\x00'
 		packet += DataTypes.writeString("TheBot")
-		packet = self.writeLength(packet)
 		self.dispatch.sendData.append(packet)
 dispatch = PacketDispatch()
 network = NetworkManager(dispatch, 'localhost', 25565, 'Thebot', 'password')
@@ -51,6 +52,7 @@ network.login()
 	
 
 while True:
+	time.sleep(0.002)
 	try:
 		network.buff.addRaw(network.recv(1024))
 	except socket.error, v:
@@ -58,10 +60,18 @@ while True:
 
 	for p in network.dispatch.sendData:
 		if network.dispatch.bot.comp:
-			
+			if len(p) >= network.dispatch.bot.compThreshold:
+				length, pdata = network.writeLengthCompression(p)
+				pdata2 = zlib.compress(p)
+				pdata2 = length+pdata2
+				pdata2 = network.writeLength(pdata2)
+				network.send(pdata2)
+			else:
+				pdata = DataTypes.writeVarInt(0) + p
+				pdata = network.writeLength(pdata)
+				network.send(pdata)
 		else:	
-			print("Sending:" + p.encode("hex"))
-			network.send(p)
+			network.send(network.writeLength(p))
 			network.dispatch.sendData.remove(p)
 	packet = network.buff.getNextPacket()
 	if packet:

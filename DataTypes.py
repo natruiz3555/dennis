@@ -36,7 +36,6 @@ class Buffer():
 				psize, psizelen = self.readVarIntandSize()
 				if psize != 0:
 					buff = self.readBuffer(length-psizelen)
-					print("Decompressing:" + str(length-psizelen) + " to " + str(psize))
 					buff.string = zlib.decompress(buff.string)
 					return buff
 				else:
