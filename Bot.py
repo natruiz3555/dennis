@@ -8,5 +8,7 @@ class Bot(Player):
 	loggedIn = False;
 	joined = False;
 	enc = False;
+	comp = False
+	compThreshold = 0
 	secret = os.urandom(16);
 	world = World();

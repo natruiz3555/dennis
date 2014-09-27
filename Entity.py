@@ -110,7 +110,7 @@ class NonLiving(Entity):
 		if ID != None:
 			Entity.__init__(self, ID);
 	title = None;
-	direction
+	direction = None;
 
 class Living(Entity):
 	def __init__(self, ID=None):
