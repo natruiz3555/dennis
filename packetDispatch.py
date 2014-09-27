@@ -177,11 +177,18 @@ def Packet0x0F(buff):
 	entity.velocity.set(VelocityX, VelocityY, VelocityZ);
 	entity.metadata = Metadata;
 
+# Spawn painting
 def Packet0x10(buff):
-	EntityID = buff.readVarInt()
-	Title = buff.readString()
-	Location = buff.readPosition()
-	Direction = buff.readUnsignedByte()
+	EntityID = buff.readVarInt();
+	Title = buff.readString();
+	Location = buff.readPosition();
+	Direction = buff.readUnsignedByte();
+	
+	entity = bot.world.getNonLiving(EntityID);
+	entity.title = Title;
+	entity.location = Location;
+	entity.direction = Direction;
+	
 
 def Packet0x11(buff):
 	EntityID = buff.readVarInt()

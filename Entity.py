@@ -2,8 +2,9 @@ from Location import Location
 
 class Entity():
 	
-	def __init__(self, ID):
-		self.ID = ID;
+	def __init__(self, ID=None):
+		if ID != None:
+			self.ID = ID;
 	# Location object
 	location = Location();
 	
@@ -103,5 +104,31 @@ class Entity():
 	# 77	 Leash Knot	 0.5	 0.5
 	# 90	 Fishing Float	 0.25	 0.25 
 	type = None;
-	
-	
+
+class NonLiving(Entity):
+	def __init__(self, ID=None):
+		if ID != None:
+			Entity.__init__(self, ID);
+	title = None;
+	direction
+
+class Living(Entity):
+	def __init__(self, ID=None):
+		if ID != None:
+			Entity.__init__(self, ID);
+
+class Player(Living):
+	def __init__(self, ID=None):
+		if ID != None:
+			Entity.__init__(self, ID);
+	UUID = "";
+	Username = "";
+	stats = [];
+	location = Location();
+	health = None;
+	food = None;
+	foodSaturation = None;
+	# 0: survival, 1: creative, 2: adventure. The hardcore flag is not included 
+	gamemode = None;
+	slot = None;
+	rotation = Location();
