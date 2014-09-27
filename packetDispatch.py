@@ -8,7 +8,7 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA
 from Crypto.PublicKey import RSA
 from DataTypes import *
-sendData = ""
+sendData = []
 bot = Bot()
 
 # Keep alive
@@ -594,7 +594,7 @@ def Packet0x00(buff):
 	resp = "\x00"
 	resp += writeVarInt(keepAlive)
 	resp = writeLength(resp)
-	sendData += resp
+	sendData.append(resp)
 
 def Packet0x01(buff):
 	if bot.joined:

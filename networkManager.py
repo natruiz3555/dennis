@@ -8,6 +8,8 @@ class NetworkManager():
 	PORT = 25565
 	buff = ''
 	s = ''
+	comp = False
+	compThreshold = 0
 	
 	def recv(self, length):
 		return self.s.recv(length)
@@ -34,12 +36,12 @@ class NetworkManager():
 		packet += DataTypes.writeUnsignedShort(self.PORT)
 		packet += DataTypes.writeVarInt(2)
 		packet = self.writeLength(packet)
-		packetDispatch.sendData += packet
+		packetDispatch.sendData.append(packet)
 		#Next Packet
 		packet = '\x00'
 		packet += DataTypes.writeString("TheBot")
 		packet = self.writeLength(packet)
-		packetDispatch.sendData += packet
+		packetDispatch.sendData.append(packet)
 
 network = NetworkManager('localhost', 25565, 'Thebot', 'password')
 network.login()
@@ -49,9 +51,9 @@ while True:
 		network.buff.addRaw(network.recv(1024))
 	except socket.error, v:
 		pass
-	if packetDispatch.sendData:
-		network.send(packetDispatch.sendData)
-		packetDispatch.sendData = ""
+	for p in packetDispatch.sendData:
+		network.send(p)
+		packetDispatch.sendData.remove(p)
 	packet = network.buff.getNextPacket()
 	if packet:
 		a = hex(packet.readVarInt())
