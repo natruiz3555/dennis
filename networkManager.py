@@ -10,12 +10,14 @@ class NetworkManager():
 	s = ''
 	comp = False
 	compThreshold = 0
+	dispatch = ''
 	
 	def recv(self, length):
 		return self.s.recv(length)
 	def send(self, data):
 		self.s.send(data)
-	def __init__(self, host, port, username, password):
+	def __init__(self, dispatch, host, port, username, password):
+		self.dispatch = dispatch
 		self.buff = DataTypes.Buffer()
 
 		self.HOST = host
@@ -36,14 +38,14 @@ class NetworkManager():
 		packet += DataTypes.writeUnsignedShort(self.PORT)
 		packet += DataTypes.writeVarInt(2)
 		packet = self.writeLength(packet)
-		PacketDispatch.sendData.append(packet)
+		self.dispatch.sendData.append(packet)
 		#Next Packet
 		packet = '\x00'
 		packet += DataTypes.writeString("TheBot")
 		packet = self.writeLength(packet)
-		PacketDispatch.sendData.append(packet)
-
-network = NetworkManager('localhost', 25565, 'Thebot', 'password')
+		self.dispatch.sendData.append(packet)
+dispatch = packetDispatch.PacketDispatch()
+network = NetworkManager(dispatch, 'localhost', 25565, 'Thebot', 'password')
 network.login()
 
 while True:
@@ -51,7 +53,8 @@ while True:
 		network.buff.addRaw(network.recv(1024))
 	except socket.error, v:
 		pass
-	for p in PacketDispatch.sendData:
+
+	for p in network.dispatch.sendData:
 		network.send(p)
 		PacketDispatch.sendData.remove(p)
 	packet = network.buff.getNextPacket()
@@ -60,5 +63,5 @@ while True:
 		while len(a) < 4:
 			a = "0x0" + a[2:]
 		a = a.upper().replace("X", "x")
-		PacketDispatch.pDispatch[a](packet)
-	print(PacketDispatch.bot.UUID)
+		network.dispatch.pDispatch[a](packet)
+	print(bot.UUID)
