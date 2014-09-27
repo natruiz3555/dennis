@@ -3,45 +3,56 @@ import zlib
 import DataTypes
 import time
 import packetDispatch
+class NetworkManager():
+	HOST = ''
+	PORT = 25565
+	buff = ''
+	s = ''
+	
+	def recv(self, length):
+		return self.s.recv(length)
+	def send(self, data):
+		self.s.send(data)
+	def __init__(self, host, port, username, password):
+		self.buff = DataTypes.Buffer()
 
-buff = DataTypes.Buffer()
+		self.HOST = host
+		self.PORT = port
 
-HOST = 'localhost'
-PORT = 25565
+		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.s.connect((self.HOST, self.PORT))
+		self.s.setblocking(0)
+		
+	def writeLength(self, data):
+		return DataTypes.writeVarInt(len(data)) + data
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((HOST, PORT))
-s.setblocking(0)
-def writeLength(data):
-	return DataTypes.writeVarInt(len(data)) + data
+	def login(self):
+		global sendData
+		packet = "\x00"
+		packet += DataTypes.writeVarInt(47)
+		packet += DataTypes.writeString(self.HOST)
+		packet += DataTypes.writeUnsignedShort(self.PORT)
+		packet += DataTypes.writeVarInt(2)
+		packet = self.writeLength(packet)
+		packetDispatch.sendData += packet
+		#Next Packet
+		packet = '\x00'
+		packet += DataTypes.writeString("TheBot")
+		packet = self.writeLength(packet)
+		packetDispatch.sendData += packet
 
-def login():
-	global sendData
-	packet = "\x00"
-	packet += DataTypes.writeVarInt(47)
-	packet += DataTypes.writeString(HOST)
-	packet += DataTypes.writeUnsignedShort(PORT)
-	packet += DataTypes.writeVarInt(2)
-	packet = writeLength(packet)
-	packetDispatch.sendData += packet
-	#Next Packet
-	packet = '\x00'
-	packet += DataTypes.writeString("TheBot")
-	packet = writeLength(packet)
-	packetDispatch.sendData += packet
-
-
-login()
+network = NetworkManager('localhost', 25565, 'Thebot', 'password')
+network.login()
 
 while True:
 	try:
-		buff.addRaw(s.recv(1024))
+		network.buff.addRaw(network.recv(1024))
 	except socket.error, v:
 		pass
 	if packetDispatch.sendData:
-		s.send(packetDispatch.sendData)
+		network.send(packetDispatch.sendData)
 		packetDispatch.sendData = ""
-	packet = buff.getNextPacket()
+	packet = network.buff.getNextPacket()
 	if packet:
 		a = hex(packet.readVarInt())
 		while len(a) < 4:
