@@ -12,7 +12,7 @@ class PacketDispatch():
     sendData = []
     bot = Bot()
     # Keep alive
-    def __init__():
+    def __init__(self):
         pass
     def Packet0x00(buff):
         KeepAliveID = buff.readVarInt()
