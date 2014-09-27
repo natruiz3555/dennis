@@ -7,7 +7,7 @@ f = open("./packetDispatch.py", "w")
 tables = soup.findAll("table", { "class" : "wikitable" })
 wfile = ""
 x=0
-tab = "    "
+tab = "	"
 disp = "pDispatch = {\n"
 def getDataType(dt):
 	if dt == "VarInt":

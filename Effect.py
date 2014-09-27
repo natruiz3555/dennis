@@ -1,5 +1,5 @@
 class Effect():
-    ID = None;
-    amplifier = None;
-    duration = None;
-    
+	ID = None;
+	amplifier = None;
+	duration = None;
+	

@@ -49,4 +49,3 @@ while True:
 		a = a.upper().replace("X", "x")
 		packetDispatch.pDispatch[a](packet)
 
-
