@@ -43,18 +43,9 @@ def Packet0x04(buff):
     Slot = buff.readShort()
     Item = buff.readBool()
     
-    found = False;
-    for entity in bot.world.entities:
-        if entity.ID == EntityID:
-            entity.slot = Slot;
-            entity.item = Item;
-            found = True;
-    if found == False:
-        entity = Entity();
-        entity.ID = EntityID;
-        entity.slot = Slot;
-        entity.item = Item;
-        bot.world.entities.append(entity);
+    entity = bot.world.getEntity(EntityID);
+    entity.slot = Slot;
+    entity.item = Item;
 
 # Spawn Position 
 def Packet0x05(buff):
@@ -73,7 +64,7 @@ def Packet0x07(buff):
     bot.gamemode = buff.readUnsignedByte()
     bot.world.levelType = buff.readString()
     
-
+# Player position and look
 def Packet0x08(buff):
     X = buff.readDouble()
     Y = buff.readDouble()
@@ -81,18 +72,50 @@ def Packet0x08(buff):
     Yaw = buff.readFloat()
     Pitch = buff.readFloat()
     Flags = buff.readByte()
+    
+    if Flags%2 != 0:
+        X += bot.location.x;
+        Flags -= 1;
+    Flags >>= 1;
+    if Flags%2 != 0:
+        Y += bot.location.y;
+        Flags -= 1;
+    Flags >>= 1;
+    if Flags%2 != 0:
+        Z += bot.location.z;
+        Flags -= 1;
+    Flags >>= 1;
+    if Flags%2 != 0:
+        Yaw += bot.rotation.x;
+        Flags -= 1;
+    Flags >>= 1;
+    if Flags%2 != 0:
+        Pitch += bot.rotation.y;
+        Flags -= 1;
+        
+    bot.rotation.set(Yaw, Pitch, 0);
+    bot.location.set(X, Y, Z);
+    
 
+# Held item changed
 def Packet0x09(buff):
-    Slot = buff.readByte()
+    bot.slot = buff.readByte()
 
+# Use bed
 def Packet0x0A(buff):
-    EntityID = buff.readVarInt()
-    Location = buff.readPosition()
+    EntityID = buff.readVarInt();
+    Location = buff.readPosition();
+    entity = bot.world.getEntity(EntityID);
+    entity.bedLocation = Location;
 
+# Animation
 def Packet0x0B(buff):
     EntityID = buff.readVarInt()
     Animation = buff.readUnsignedByte()
-
+    entity = bot.world.getEntity(EntityID);
+    entity.animation = Animation;
+    
+# Spawn player
 def Packet0x0C(buff):
     EntityID = buff.readVarInt()
     PlayerUUID = buff.readBool()
@@ -103,11 +126,20 @@ def Packet0x0C(buff):
     Pitch = buff.readByte()
     CurrentItem = buff.readShort()
     Metadata = buff.readMetadata()
+    
+    entity = bot.world.getEntity(EntityID);
+    entity.UUID = PlayerUUID;
+    entity.location.set(X, Y, Z);
+    entity.rotation.set(Yaw, Pitch, 0);
+    entity.currentItem = CurrentItem;
+    entity.metadata = Metadata;
 
+# Collect item
 def Packet0x0D(buff):
     CollectedEntityID = buff.readVarInt()
     CollectorEntityID = buff.readVarInt()
 
+#
 def Packet0x0E(buff):
     EntityID = buff.readVarInt()
     Type = buff.readByte()
@@ -116,8 +148,14 @@ def Packet0x0E(buff):
     Z = buff.readInt()
     Pitch = buff.readByte()
     Yaw = buff.readByte()
-    Data = buff.readObjectData()
-
+    Data = buff.readObjectData() # Add this later
+    
+    entity = bot.world.getEntity(EntityID);
+    entity.type = Type;
+    entity.location.set(X, Y, Z);
+    entity.rotation.set(Yaw, Pitch, 0);
+    
+# Spawn mob
 def Packet0x0F(buff):
     EntityID = buff.readVarInt()
     Type = buff.readUnsignedByte()
@@ -126,11 +164,18 @@ def Packet0x0F(buff):
     Z = buff.readInt()
     Yaw = buff.readByte()
     Pitch = buff.readByte()
-    HeadPitch = buff.readByte()
+    HeadPitch = buff.readByte() # No idea what this is
     VelocityX = buff.readShort()
     VelocityY = buff.readShort()
     VelocityZ = buff.readShort()
     Metadata = buff.readMetadata()
+    
+    entity = bot.world.getEntity(EntityID);
+    entity.type = Type;
+    entity.location.set(X, Y, Z);
+    entity.rotation.set(Yaw, Pitch, 0);
+    entity.velocity.set(VelocityX, VelocityY, VelocityZ);
+    entity.metadata = Metadata;
 
 def Packet0x10(buff):
     EntityID = buff.readVarInt()

@@ -2,6 +2,7 @@ import struct
 import Misc
 import zlib
 compress = False
+from Location import Location
 class Buffer():
     string = ""
     
@@ -93,7 +94,9 @@ class Buffer():
         x = val >> 38
         y = val << 26 >> 52
         z = val << 38 >> 38
-        return Location(x, y, z)
+        location = Location();
+        location.set(x, y, z);
+        return location;
 
     def readString(self):
         length = self.readVarInt()

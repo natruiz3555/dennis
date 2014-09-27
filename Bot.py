@@ -1,5 +1,6 @@
 import os
 from World import World
+from Location import Location
 
 class Bot():
     UUID = "";
@@ -16,5 +17,6 @@ class Bot():
     foodSaturation = None;
     # 0: survival, 1: creative, 2: adventure. The hardcore flag is not included 
     gamemode = None;
-
+    slot = None;
+    rotation = Location();
     

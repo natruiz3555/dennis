@@ -1,3 +1,4 @@
+from Entity import Entity
 class World():
     entities = [];
     blocks = [];
@@ -9,3 +10,11 @@ class World():
     levelType = None;
     # -1: The Nether, 0: The Overworld, 1: The End 
     dimension = None;
+    def getEntity(self, ID):
+        for entity in self.entities:
+            if ID == entity.ID:
+                return entity;
+        entity = Entity(ID);
+        self.entities.append(entity)
+        return entity;
+    
