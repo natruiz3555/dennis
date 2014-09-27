@@ -44,9 +44,11 @@ class NetworkManager():
 		packet += DataTypes.writeString("TheBot")
 		packet = self.writeLength(packet)
 		self.dispatch.sendData.append(packet)
-dispatch = packetDispatch.PacketDispatch()
+dispatch = PacketDispatch()
 network = NetworkManager(dispatch, 'localhost', 25565, 'Thebot', 'password')
 network.login()
+
+	
 
 while True:
 	try:
@@ -63,5 +65,4 @@ while True:
 		while len(a) < 4:
 			a = "0x0" + a[2:]
 		a = a.upper().replace("X", "x")
-		network.dispatch.pDispatch[a](packet)
-	print(network.dispatch.bot.UUID)
+		getattr(network.dispatch, "Packet"+a)(packet)
