@@ -3,30 +3,51 @@ from networkManager import NetworkManager
 import socket;
 import thread;
 import types;
+import zlib;
+import DataTypes;
 from pprint import pprint
 
 network = NetworkManager('localhost', 25565, 'Thebot', 'password')
 network.login()
 
-	
 def getData():
-	while True:
-		try:
-			network.buff.addRaw(network.recv(1024))
-		except socket.error, v:
-			pass
+	try:
+		while True:
+			try:
+				network.buff.addRaw(network.recv(1024))
+			except socket.error, v:
+				pass
+		
+			for p in network.dispatch.sendData:
+				if network.dispatch.bot.comp:
+					if len(p) >= network.dispatch.bot.compThreshold:
+						length, pdata = network.writeLengthCompression(p)
+						pdata2 = zlib.compress(p)
+						pdata2 = length+pdata2
+						pdata2 = network.writeLength(pdata2)
+						network.send(pdata2)
+					else:
+						pdata = DataTypes.writeVarInt(0) + p
+						pdata = network.writeLength(pdata)
+						network.send(pdata)
+				else:	
+					network.send(network.writeLength(p))
+					network.dispatch.sendData.remove(p)
+			packet = network.buff.getNextPacket()
+			if packet:
+				a = hex(packet.readVarInt())
+				while len(a) < 4:
+					a = "0x0" + a[2:]
+				a = a.upper().replace("X", "x")
+				getattr(network.dispatch, "Packet"+a)(packet)
+				if network.dispatch.bot.comp:
+					network.buff.comp = True
+					network.buff.compThreshold = network.dispatch.bot.compThreshold
+	except:
+		network.dispatch.bot.loggedIn = False;
+		print("\nConnection Terminated");
+		exit();
 	
-		for p in network.dispatch.sendData:
-			network.send(p)
-			network.dispatch.sendData.remove(p)
-		packet = network.buff.getNextPacket()
-		if packet:
-			a = hex(packet.readVarInt())
-			while len(a) < 4:
-				a = "0x0" + a[2:]
-			a = a.upper().replace("X", "x")
-			getattr(network.dispatch, "Packet"+a)(packet)
-
 try:
 	thread.start_new_thread(getData, ()); 
 except:
@@ -52,14 +73,20 @@ def getObjectData(data):
 
 	return dataObject;
 		
-
+connected = False;
+print("Connecting...");
 while True:
-	a = raw_input("mcBot> ");
-	if a == "stop" or a == "quit" or a == "exit":
-		print("Shutting down...");
+	if network.dispatch.bot.loggedIn and connected == False:
+		connected = True;
+		a = raw_input("mcBot> ");
+		if a == "stop" or a == "quit" or a == "exit":
+			print("Shutting down...");
+			exit();
+		elif a == "getData":
+			print("Data:");
+			pprint(getObjectData(network.dispatch.bot));
+		else:
+			print("Invalid command");
+	elif network.dispatch.bot.loggedIn == False and connected == True:
+		print("Connection Terminated");
 		exit();
-	elif a == "getData":
-		print("Data:");
-		pprint(getObjectData(network.dispatch.bot));
-	else:
-		print("Invalid command");

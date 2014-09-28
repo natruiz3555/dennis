@@ -35,6 +35,9 @@ class NetworkManager():
 		
 	def writeLength(self, data):
 		return DataTypes.writeVarInt(len(data)) + data
+		
+	def writeLengthCompression(self, data):
+		return DataTypes.writeVarInt(len(data)), data
 
 	def login(self):
 		global sendData
@@ -43,11 +46,8 @@ class NetworkManager():
 		packet += DataTypes.writeString(self.HOST)
 		packet += DataTypes.writeUnsignedShort(self.PORT)
 		packet += DataTypes.writeVarInt(2)
-		packet = self.writeLength(packet)
 		self.dispatch.sendData.append(packet)
 		#Next Packet
 		packet = '\x00'
 		packet += DataTypes.writeString("TheBot")
-		packet = self.writeLength(packet)
 		self.dispatch.sendData.append(packet)
-	

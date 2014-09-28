@@ -34,10 +34,13 @@ class Buffer():
 		length = self.readVarInt()
 		if length <= len(self.string):
 			if self.comp:
-				if self.readVarInt() >= self.compThreshold:
-					buff = self.readBuffer(length)
-					buff.string = zlib.decompress(buff.string, zlib.MAX_WBITS)
+				psize, psizelen = self.readVarIntandSize()
+				if psize != 0:
+					buff = self.readBuffer(length-psizelen)
+					buff.string = zlib.decompress(buff.string)
 					return buff
+				else:
+					return self.readBuffer(length-1)
 			else:
 				return self.readBuffer(length)
 		else:
@@ -92,6 +95,17 @@ class Buffer():
 			byte = self.readUnsignedByte()
 			number += (byte & 0x7f) << (7 * reference)
 		return number
+		
+	def readVarIntandSize(self):
+		number = 0
+		reference = 0
+		byte = self.readUnsignedByte()
+		number += byte & 0x7f
+		while(byte >> 7 == 1):
+			reference += 1
+			byte = self.readUnsignedByte()
+			number += (byte & 0x7f) << (7 * reference)
+		return number, reference + 1
 	
 	def readPosition(self):
 		val = self.readLong()

@@ -17,8 +17,8 @@ class PacketDispatch():
 		pass
 
 	# Keep alive
-	def Packet0x00(self, buff):
-		KeepAliveID = buff.readVarInt()
+	#def Packet0x00(self, buff):
+	#	KeepAliveID = buff.readVarInt()
 	
 	
 	# Alive: Chat update
@@ -34,12 +34,12 @@ class PacketDispatch():
 	
 	# Time update
 	def Packet0x03(self, buff):
-		if self.bot.comp == False:
-			self.bot.comp = True
-			self.bot.compThreshold = buff.readVarInt()
-		else:
+		if len(buff.string) == 16:
 			self.bot.world.worldAge = buff.readLong()
 			self.bot.world.timeOfDay = buff.readLong()
+		else:
+			self.bot.comp = True
+			self.bot.compThreshold = buff.readVarInt()
 	
 	# Entity Equipment
 	def Packet0x04(self, buff):
@@ -640,7 +640,9 @@ class PacketDispatch():
 		Data = buff.readString()
 	def Packet0x40(self, buff):
 		Reason = buff.readString()
-		print("Kicked from Server:" + Reason)
+		print("\nKicked from Server:" + Reason)
+		self.bot.loggedIn = False;
+		exit();
 	
 	def Packet0x41(self, buff):
 		Difficulty = buff.readUnsignedByte()
@@ -702,7 +704,6 @@ class PacketDispatch():
 		keepAlive = buff.readVarInt()
 		resp = "\x00"
 		resp += writeVarInt(keepAlive)
-		resp = writeLength(resp)
 		self.sendData.append(resp)
 
 	def Packet0x01(self, buff):
