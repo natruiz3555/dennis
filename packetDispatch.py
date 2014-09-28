@@ -199,43 +199,70 @@ class PacketDispatch():
 		entity.location = Location;
 		entity.direction = Direction;
 		
-	
+	# Spawn Experience Orb 
 	def Packet0x11(self, buff):
 		EntityID = buff.readVarInt()
 		X = buff.readInt()
 		Y = buff.readInt()
 		Z = buff.readInt()
 		Count = buff.readShort()
+		
+		entity = self.bot.world.getOrb(EntityID);
+		entity.location.set(X, Y, Z);
+		entity.XP = Count;
 	
+	# Entity Velocity 
 	def Packet0x12(self, buff):
 		EntityID = buff.readVarInt()
 		VelocityX = buff.readShort()
 		VelocityY = buff.readShort()
 		VelocityZ = buff.readShort()
+		
+		entity = self.bot.world.getEntity(EntityID);
+		entity.velocity.set(VelocityX, VelocityY, VelocityZ);
 	
+	# Destroy Entities 
 	def Packet0x13(self, buff):
 		Count = buff.readVarInt()
 		EntityIDs = []
 		while Count > 0:
 			EntityIDs.append(buff.readVarInt())
 			Count -= 1
-	
+		
+		for entity in EntityIDs:
+			self.bot.world.delEntity(entity);
+		
+	# Create entity
 	def Packet0x14(self, buff):
 		EntityID = buff.readVarInt()
+		
+		self.bot.world.getEntity(EntityID);
 	
+	# Entity Relative Move 
 	def Packet0x15(self, buff):
 		EntityID = buff.readVarInt()
 		DX = buff.readByte()
 		DY = buff.readByte()
 		DZ = buff.readByte()
 		OnGround = buff.readBool()
+		
+		entity = self.bot.world.getEntity(EntityID);
+		entity.location.add(DX/32.0, DY/32.0, DZ/32.0);
+		entity.onGround = OnGround;
 	
+	# Entity Look
 	def Packet0x16(self, buff):
 		EntityID = buff.readVarInt()
 		Yaw = buff.readByte()
 		Pitch = buff.readByte()
 		OnGround = buff.readBool()
-	
+		
+		entity = self.bot.world.getEntity(EntityID);
+		# TODO: Fix rotation on other methods
+		entity.rotation.add((Yaw/64)*90, (Pitch/64)*90, 0);
+		entity.onGround = OnGround;
+
+	# Entity Look and Relative Move 
 	def Packet0x17(self, buff):
 		EntityID = buff.readVarInt()
 		DX = buff.readByte()
@@ -244,7 +271,13 @@ class PacketDispatch():
 		Yaw = buff.readByte()
 		Pitch = buff.readByte()
 		OnGround = buff.readBool()
+		
+		entity = self.bot.world.getEntity(EntityID);
+		entity.rotation.add((Yaw/64)*90, (Pitch/64)*90, 0);
+		entity.location.add(DX/32.0, DY/32.0, DZ/32.0);
+		entity.onGround = OnGround;
 	
+	# Entity Teleport
 	def Packet0x18(self, buff):
 		EntityID = buff.readVarInt()
 		X = buff.readInt()
@@ -253,45 +286,105 @@ class PacketDispatch():
 		Yaw = buff.readByte()
 		Pitch = buff.readByte()
 		OnGround = buff.readBool()
+		
+		entity = self.bot.world.getEntity(EntityID);
+		entity.rotation.add((Yaw/64)*90, (Pitch/64)*90, 0);
+		entity.location.set(X, Y, Z);
+		entity.onGround = OnGround;
 	
+	#  Entity Head Look
 	def Packet0x19(self, buff):
 		EntityID = buff.readVarInt()
 		HeadYaw = buff.readByte()
+		
+		entity = self.bot.world.getEntity(EntityID);
+		#entity.rotation.add();
+		# No idea how to use HeadYaw in format 2p/256
 	
+	# Entity status
 	def Packet0x1A(self, buff):
 		EntityID = buff.readInt()
 		EntityStatus = buff.readByte()
+		
+		entity = self.bot.world.getEntity(EntityID);
+		entity.status = EntityStatus;
 	
+	# Attach Entity
 	def Packet0x1B(self, buff):
 		EntityID = buff.readInt()
 		VehicleID = buff.readInt()
 		Leash = buff.readBool()
+		
+		entity = self.bot.world.getPlayer(EntityID);
+		entity.vehicle = VehicleID;
+		entity.leash = Leash;
 	
+	# Entity Metadata 
 	def Packet0x1C(self, buff):
 		EntityID = buff.readVarInt()
 		Metadata = buff.readMetadata()
+		
+		entity = self.bot.world.getPlayer(EntityID);
+		entity.metadata = Metadata;
 	
+	# Entity Effect 
 	def Packet0x1D(self, buff):
 		EntityID = buff.readVarInt()
 		EffectID = buff.readByte()
 		Amplifier = buff.readByte()
 		Duration = buff.readVarInt()
 		HideParticles = buff.readBool()
-	
+		
+		entity = self.bot.world.getPlayer(EntityID);
+		effect = entity.getEffect(EffectID);
+		effect.amplifier = Amplifier;
+		effect.duration = Duration;
+		effect.hideParticles = HideParticles;
+		
+	#  Remove Entity Effect 
 	def Packet0x1E(self, buff):
 		EntityID = buff.readVarInt()
 		EffectID = buff.readByte()
-	
+		
+		entity = self.bot.world.getEntity(EntityID);
+		entity.delEffect(EffectID);
+		
+	# Set Experience 
 	def Packet0x1F(self, buff):
-		Experiencebar = buff.readBool()
+		Experiencebar = buff.readBool() # TODO: Find out if we need this
 		Level = buff.readVarInt()
 		TotalExperience = buff.readVarInt()
+		
+		self.bot.XP = TotalExperience;
+		self.bot.level = Level;
 	
+	# Entity Properties
 	def Packet0x20(self, buff):
 		EntityID = buff.readVarInt()
 		Count = buff.readInt()
-		Properties = buff.readBool()
+		
+		entity = self.bot.world.getEntity(EntityID);
+		
+		for i in range(Count):
+			Key = buff.readString();
+			Value = buff.readDouble();
+			modifierArrayLength = buff.readVarInt();
+			
+			property = entity.getProperty(Key);
+			property.value = Value;
+			
+			for j in range(modifierArrayLength):
+				UUID = 0;
+				for k in range (4):
+					UUID += buff.readInt() << ((3-k)*32);
+				Amount = buff.readDouble();
+				Opperation = buff.readByte();
+				
+				modifier = property.getModifier(UUID);
+				modifier.amount = Amount;
+				modifier.opperation = Opperation;
 	
+	#
 	def Packet0x21(self, buff):
 		ChunkX = buff.readInt()
 		ChunkZ = buff.readInt()
@@ -299,6 +392,8 @@ class PacketDispatch():
 		Primarybitmap = buff.readBool()
 		Size = buff.readVarInt()
 		Data = buff.readBool()
+		
+		
 	
 	def Packet0x22(self, buff):
 		ChunkX = buff.readInt()
@@ -368,7 +463,10 @@ class PacketDispatch():
 		OffsetZ = buff.readBool()
 		Particledata = buff.readBool()
 		Numberofparticles = buff.readInt()
-		Data = buff.readArrayOfVarInt()
+		Data = [];
+		for i in range(Numberofparticles):
+			Data.append(buff.readVarInt());
+			
 	
 	def Packet0x2B(self, buff):
 		Reason = buff.readUnsignedByte()

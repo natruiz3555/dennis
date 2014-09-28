@@ -1,4 +1,4 @@
-from Entity import Entity, Living, NonLiving, Player
+from Entity import Entity, Living, NonLiving, Player, Orb
 class World():
 	entities = [];
 	blocks = [];
@@ -43,3 +43,16 @@ class World():
 		entity = Player(ID);
 		self.entities.append(entity)
 		return entity;
+	
+	def getOrb(self, ID):
+		for entity in self.entities:
+			if ID == entity.ID and isinstance(entity, Orb):
+				return entity;
+		entity = Player(ID);
+		self.entities.append(entity)
+		return entity;
+	
+	def delEntity(self, entity):
+		if isinstance(entity, int):
+			entity = self.getEntity(entity);
+		self.entities.remove(entity);

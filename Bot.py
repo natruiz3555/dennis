@@ -12,3 +12,5 @@ class Bot(Player):
 	compThreshold = 0
 	secret = os.urandom(16);
 	world = World();
+	XP = None;
+	level = None;
