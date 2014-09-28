@@ -39,12 +39,13 @@ class PacketDispatch():
 	
 	# Time update
 	def Packet0x03(self, buff):
-		if self.bot.comp == False:
-			self.bot.comp = True
-			self.bot.compThreshold = buff.readVarInt()
-		else:
+		print("Got 0x03:" + str(len(buff.string)))
+		if len(buff.string) == 16:
 			self.bot.world.worldAge = buff.readLong()
 			self.bot.world.timeOfDay = buff.readLong()
+		else:
+			self.bot.comp = True
+			self.bot.compThreshold = buff.readVarInt()
 	
 	# Entity Equipment
 	def Packet0x04(self, buff):
@@ -606,6 +607,7 @@ class PacketDispatch():
 	
 	def Packet0x00(self, buff):
 		global sendData
+		print("Got keep alive")
 		keepAlive = buff.readVarInt()
 		resp = "\x00"
 		resp += writeVarInt(keepAlive)
