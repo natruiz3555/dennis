@@ -18,7 +18,6 @@ class PacketDispatch():
 	# Keep alive
 	def Packet0x00(self, buff):
 		KeepAliveID = buff.readVarInt()
-		print("Keep alive")
 	
 	
 	# Alive: Chat update
@@ -27,22 +26,16 @@ class PacketDispatch():
 		if self.bot.loggedIn == False:
 			self.bot.UUID = buff.readString()
 			self.bot.Username = buff.readString()
-			print("Logged in with info:")
-			print("\tUUID: " + self.bot.UUID)
-			print("\tUsername: " + self.bot.Username)
 			self.bot.loggedIn = True
-			print("Login Successfull")
 		else:
 			JSONData = buff.readString()
 			Position = buff.readByte()
-			print("Chat:" + JSONData)
 	
 	# Time update
 	def Packet0x03(self, buff):
 		if self.bot.comp == False:
 			self.bot.comp = True
 			self.bot.compThreshold = buff.readVarInt()
-			print("Enabled Compression")
 		else:
 			self.bot.world.worldAge = buff.readLong()
 			self.bot.world.timeOfDay = buff.readLong()
