@@ -12,5 +12,5 @@ class PacketSend():
 		packet += DataTypes.writeDouble(Y-1.62);
 		packet += DataTypes.writeDouble(Z);
 		packet += DataTypes.writeBool(True);
-		packet = self.writeLength(packet)
+		packet = DataTypes.writeLength(packet)
 		self.dispatch.sendData.append(packet)

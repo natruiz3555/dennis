@@ -11,7 +11,7 @@ network = NetworkManager('localhost', 25565, 'Thebot', 'password')
 network.login()
 
 def getData():
-	try:
+	#try:
 		while True:
 			try:
 				network.buff.addRaw(network.recv(1024))
@@ -43,10 +43,10 @@ def getData():
 				if network.dispatch.bot.comp:
 					network.buff.comp = True
 					network.buff.compThreshold = network.dispatch.bot.compThreshold
-	except:
-		network.dispatch.bot.loggedIn = False;
-		print("\nConnection Terminated");
-		exit();
+	#except:
+	#	network.dispatch.bot.loggedIn = False;
+	#	print("\nConnection Terminated");
+	#	exit();
 	
 try:
 	thread.start_new_thread(getData, ()); 
@@ -76,17 +76,31 @@ def getObjectData(data):
 connected = False;
 print("Connecting...");
 while True:
-	if network.dispatch.bot.loggedIn and connected == False:
+	if network.dispatch.bot.loggedIn:
 		connected = True;
 		a = raw_input("mcBot> ");
-		if a == "stop" or a == "quit" or a == "exit":
+		if a[:4] == "stop" or a[:4] == "quit" or a[:4] == "exit":
 			print("Shutting down...");
 			exit();
-		elif a == "getData":
+		elif a[:7] == "getData":
 			print("Data:");
 			pprint(getObjectData(network.dispatch.bot));
+		elif a[:4] == "move":
+			args = a[4:];
+			b = args.split(" ");
+			b.remove("");
+			if len(b) == 4:
+				if b[3] == "True":
+					b[3] = True;
+				else:
+					b[3] = False;
+				network.packetSend.Packet0x04(float(b[0]), float(b[1]), float(b[2]), b[3]);
+			else:
+				print("usage: move <x> <y> <z> <onGround>");
+		elif a == "":
+			pass;
 		else:
 			print("Invalid command");
-	elif network.dispatch.bot.loggedIn == False and connected == True:
+	elif connected == True:
 		print("Connection Terminated");
 		exit();
