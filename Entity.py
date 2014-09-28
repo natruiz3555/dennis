@@ -163,7 +163,7 @@ class Property():
 		self.type = ID;
 	def getModifier(self, ID):
 		for modifier in self.modifiers:
-			if ID == modifier.type and isinstance(modifier, Modifier):
+			if ID == modifier.UUID and isinstance(modifier, Modifier):
 				return modifier;
 		modifier = Modifier(ID);
 		self.modifiers.append(modifier);
