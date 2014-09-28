@@ -8,6 +8,7 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA
 from Crypto.PublicKey import RSA
 from DataTypes import *
+
 class PacketDispatch():
 	sendData = []
 	bot = Bot()

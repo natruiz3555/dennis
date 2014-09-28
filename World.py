@@ -1,9 +1,11 @@
 from Entity import Entity, Living, NonLiving, Player, Orb
+
 class World():
 	entities = [];
 	blocks = [];
 	worldAge = None;
 	timeOfDay = None;
+	printable = True;
 	#  0 thru 3 for Peaceful, Easy, Normal, Hard. 
 	difficulty = None;
 	# default, flat, largeBiomes, amplified, default_1_1

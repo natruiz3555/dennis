@@ -4,6 +4,7 @@ import DataTypes
 import time
 from packetDispatch import PacketDispatch
 from PacketSend import PacketSend
+
 class NetworkManager():
 	HOST = ''
 	PORT = 25565
@@ -13,6 +14,7 @@ class NetworkManager():
 	compThreshold = 0
 	dispatch = ''
 	packetSend = None;
+	printable = True;
 	
 	def recv(self, length):
 		return self.s.recv(length)
@@ -48,3 +50,4 @@ class NetworkManager():
 		packet += DataTypes.writeString("TheBot")
 		packet = self.writeLength(packet)
 		self.dispatch.sendData.append(packet)
+	

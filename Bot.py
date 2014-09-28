@@ -5,6 +5,7 @@ from Entity import Player
 class Bot(Player):
 	def __init__(self):
 		Player.__init__(self);
+	printable = True;
 	loggedIn = False;
 	joined = False;
 	enc = False;

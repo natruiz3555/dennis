@@ -2,6 +2,7 @@ from Location import Location
 
 class Entity():
 	
+	printable = True;
 	def __init__(self, ID=None):
 		if ID != None:
 			self.ID = ID;

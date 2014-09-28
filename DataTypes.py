@@ -1,6 +1,7 @@
 import struct
 import Misc
 import zlib
+
 compress = False
 from Location import Location
 class Buffer():
