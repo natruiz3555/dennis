@@ -1,16 +1,17 @@
-import DataTypes
+from DataTypes import Buffer;
 
 class PacketSend():
-	dispatch = None;
+	network = None;
 	
-	def __init__(self, dispatch):
-		self.dispatch = dispatch;
+	def __init__(self, network):
+		self.network = network;
 	
 	def Packet0x04(self, X, Y, Z, onGround):
-		packet = "\x04"
-		packet += DataTypes.writeDouble(X);
-		packet += DataTypes.writeDouble(Y-1.62);
-		packet += DataTypes.writeDouble(Z);
-		packet += DataTypes.writeBool(True);
-		packet = DataTypes.writeLength(packet)
-		self.dispatch.sendData.append(packet)
+		packet = Buffer();
+		packet.writeVarInt(0x04);
+		packet.writeDouble(X);
+		packet.writeDouble(Y-1.62);
+		packet.writeDouble(Z);
+		packet.writeBool(True);
+		packet.writeLength(packet)
+		self.network.send(packet);

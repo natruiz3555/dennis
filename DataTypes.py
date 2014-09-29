@@ -146,61 +146,62 @@ class Buffer():
 	
 
 
-def writeSlot(slot):
-	print "data value", slot.dataValue
-	if slot == None:
-		return writeShort(-1)
-	string = writeShort(slot.dataValue)
-	string += writeByte(slot.count)
-	string += writeShort(slot.damage)
-	print "slot", string.encode("hex")
-	if slot.nbt == "":
-		string += writeShort(-1)
-		return string
-	string += writeShort(len(slot.nbt))
-	string += slot.nbt
-	return string
-
-def writeDouble(number):
-	return struct.pack("!d", number)
-
-def writeBool(number):
-	return struct.pack("!?", number)
-
-def writeFloat(number):
-	return struct.pack("!f", number)
-
-def writeVarInt(number):
-	string = ""
-	char = number & 0x7f
-	number = number >> 7
-	while(number != 0):
-		char = char | 0x80
-		string += chr(char)
+	def writeSlot(self, slot):
+		print "data value", slot.dataValue
+		if slot == None:
+			self.writeShort(-1);
+			return;
+		self.writeShort(slot.dataValue);
+		self.writeByte(slot.count);
+		self.writeShort(slot.damage);
+		if slot.nbt == "":
+			self.writeShort(-1);
+			return;
+		self.writeShort(len(slot.nbt))
+		self.writeInt(slot.nbt);
+	
+	def writeDouble(self, number):
+		self.string += struct.pack("!d", number);
+	
+	def writeBool(self, number):
+		self.string += struct.pack("!?", number)
+	
+	def writeFloat(self, number):
+		self.string += struct.pack("!f", number)
+	
+	def writeVarInt(self, number):
+		string = ""
 		char = number & 0x7f
 		number = number >> 7
-	string += chr(char)
-	return string
-
-def writeInt(number):
-	return struct.pack("!i", number)
-
-def writeString(string):
-	string1 = writeVarInt(len(string))
-	string1 += struct.pack("!" + str(len(string)) + "s", string)
-	return string1
-
-def writeByte(number):
-	return chr(number)
-
-def writeUnsignedByte(number):
-	return struct.pack("!B", number)
-
-def writeShort(number):
-	return struct.pack("!h", number)
-
-def writeUnsignedShort(number):
-	return struct.pack("!H", number)
+		while(number != 0):
+			char = char | 0x80
+			string += chr(char)
+			char = number & 0x7f
+			number = number >> 7
+		string += chr(char)
+		self.string += string
 	
-def writeLength(data):
-	return writeVarInt(len(data)) + data
+	def writeInt(self, number):
+		self.string += struct.pack("!i", number)
+	
+	def writeString(self, string):
+		self.writeVarInt(len(string));
+		self.string += unicode(string, "utf-8");
+	
+	def writeByte(self, number):
+		self.string += chr(number)
+	
+	def writeUnsignedByte(self, number):
+		self.string += struct.pack("!B", number)
+	
+	def writeShort(self, number):
+		self.string += struct.pack("!h", number)
+	
+	def writeUnsignedShort(self, number):
+		self.string += struct.pack("!H", number)
+		
+	def writeLength(self, data):
+		string = self.string;
+		self.string = "";
+		self.writeVarInt(len(data)) + data;
+		self.addRaw(string);
