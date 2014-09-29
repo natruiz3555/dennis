@@ -186,7 +186,7 @@ class Buffer():
 	
 	def writeString(self, string):
 		self.writeVarInt(len(string));
-		self.string += unicode(string, "utf-8");
+		self.string += struct.pack("!" + str(len(string)) + "s", string);
 	
 	def writeByte(self, number):
 		self.string += chr(number)
@@ -200,8 +200,8 @@ class Buffer():
 	def writeUnsignedShort(self, number):
 		self.string += struct.pack("!H", number)
 		
-	def writeLength(self, data):
+	def writeLength(self):
 		string = self.string;
 		self.string = "";
-		self.writeVarInt(len(data)) + data;
+		self.writeVarInt(len(string));
 		self.addRaw(string);

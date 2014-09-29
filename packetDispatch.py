@@ -12,9 +12,12 @@ from DataTypes import *
 class PacketDispatch():
 	sendData = []
 	bot = Bot()
+	packetSend = None;
+	network = None;
 	# Keep alive
-	def __init__(self):
-		pass
+	def __init__(self, network):
+		self.network = network;
+		self.packetSend = network.packetSend;
 
 	# Keep alive
 	#def Packet0x00(self, buff):
@@ -700,11 +703,12 @@ class PacketDispatch():
 		Tag = buff.readBool()
 	
 	def Packet0x00(self, buff):
-		global sendData
 		keepAlive = buff.readVarInt()
-		resp = "\x00"
-		resp += writeVarInt(keepAlive)
-		self.sendData.append(resp)
+		packet = Buffer();
+		packet.writeVarInt(0x00);
+		packet.writeVarInt(keepAlive)
+		packet.writeLength();
+		self.network.send(packet);
 
 	def Packet0x01(self, buff):
 		if self.bot.joined:

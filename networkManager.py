@@ -20,9 +20,8 @@ class NetworkManager():
 		return self.s.recv(length)
 	def send(self, data):
 		self.s.send(data.string);
-		print("Sending: "+data.string);
 	def __init__(self, host, port, username, password):
-		self.dispatch = PacketDispatch()
+		self.dispatch = PacketDispatch(self)
 		self.buff = Buffer()
 
 		self.HOST = host
@@ -49,10 +48,12 @@ class NetworkManager():
 		packet.writeString(self.HOST);
 		packet.writeUnsignedShort(self.PORT);
 		packet.writeVarInt(2);
+		packet.writeLength();
 		self.send(packet);
 		
 		# Send login
 		packet = Buffer();
 		packet.writeVarInt(0x00);
-		packet.writeString("TheBot");
+		packet.writeString("TheBot2");
+		packet.writeLength();
 		self.send(packet);
