@@ -34,8 +34,8 @@ class Buffer():
 		length = self.readVarInt()
 		if length <= len(self.string):
 			packet = self.readBuffer(length)
-			if(compressionThreshold != 0 and length >= compressionThreshold):
-				uncompressedSize = packet.readVarInt()
+			uncompressedSize = packet.readVarInt()
+			if(compressionThreshold != 0 and uncompressedSize >= compressionThreshold):
 				packet.string = zlib.decompress(packet.string)
 			return packet
 		else:
@@ -195,8 +195,16 @@ class Buffer():
 	def writeUnsignedShort(self, number):
 		self.string += struct.pack("!H", number)
 		
-	def writeLength(self):
+	def networkFormat(self, compressionThreshold=0):
 		string = self.string;
 		self.string = "";
-		self.writeVarInt(len(string));
-		self.addRaw(string);
+		if compressionThreshold != 0 and len(string) >= compressionThreshold:
+			uncompressedSize = len(string)
+			string = zlib.compress(string)
+			compressedSize = len(string)
+			self.writeVarint(compressedSize)
+			self.writeVarint(uncompressedSize)
+			self.addRaw(string)
+		else:
+			self.writeVarInt(len(string));
+			self.addRaw(string);

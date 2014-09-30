@@ -33,11 +33,6 @@ class NetworkManager():
 		
 		self.packetSend = PacketSend(self);
 		
-	def writeLength(self, data):
-		return self.buff.writeVarInt(len(data)) + data
-		
-	def writeLengthCompression(self, data):
-		return self.buff.writeVarInt(len(data)), data
 
 	def login(self):
 		global sendData
