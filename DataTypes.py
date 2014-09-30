@@ -28,21 +28,16 @@ class Buffer():
 	def getRaw(self):
 		return self.string
 	
-	def getNextPacket(self):
+	def getNextPacket(self, compressionThreshold=0):
 		if self.string == "": return None
 		tmp = self.string
 		length = self.readVarInt()
 		if length <= len(self.string):
-			if self.comp:
-				psize, psizelen = self.readVarIntandSize()
-				if psize != 0:
-					buff = self.readBuffer(length-psizelen)
-					buff.string = zlib.decompress(buff.string)
-					return buff
-				else:
-					return self.readBuffer(length-1)
-			else:
-				return self.readBuffer(length)
+			packet = self.readBuffer(length)
+			if(compressionThreshold != 0 and length >= compressionThreshold):
+				uncompressedSize = packet.readVarInt()
+				packet.string = zlib.decompress(packet.string)
+			return packet
 		else:
 			self.string = tmp
 			return None
