@@ -1,5 +1,5 @@
 #
-#  Copyright 2014 natruiz3553 <natruiz3553@gmail.com>
+#  Copyright 2014 Nathan Ruiz <natruiz3553@gmail.com>
 # 
 # McBot is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
