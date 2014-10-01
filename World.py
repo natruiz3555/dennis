@@ -29,6 +29,8 @@ class World():
 	levelType = None;
 	# -1: The Nether, 0: The Overworld, 1: The End 
 	dimension = None;
+	
+	blocks = {};
 	# Gets an entity object with ID. Creates
 	# one if no other object matches the ID
 	def getEntity(self, ID):

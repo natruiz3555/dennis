@@ -438,26 +438,36 @@ class PacketDispatch():
 				modifier.amount = Amount;
 				modifier.opperation = Opperation;
 	
-	#
+	# Don't know what to do with this one
 	def Packet0x21(self, buff):
-		ChunkX = buff.readInt()
-		ChunkZ = buff.readInt()
-		GroundUpcontinuous = buff.readBool()
-		Primarybitmap = buff.readBool()
-		Size = buff.readVarInt()
-		Data = buff.readBool()
+		ChunkX = buff.readInt();
+		ChunkZ = buff.readInt();
+		GroundUpcontinuous = buff.readBool();	
+		Primarybitmap = buff.readBool();
+		Size = buff.readVarInt();
+		Data = buff.readBool();
 		
 		
-	
+	# Multi Block Change
 	def Packet0x22(self, buff):
 		ChunkX = buff.readInt()
 		ChunkZ = buff.readInt()
 		Recordcount = buff.readVarInt()
-		Records = buff.readBool()
+		
+		for i in range(Recordcount):
+			position = buff.readShort();
+			x = position & 0xF000;
+			y = position & 0x00FF;
+			z = position & 0x0F00;
+			BlockID = buff.readVarInt();
+			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = BlockID;
 	
 	def Packet0x23(self, buff):
 		Location = buff.readPosition()
 		BlockID = buff.readVarInt()
+		
+		self.bot.world.blocks[Location.get()] = BlockID;
+		
 	
 	def Packet0x24(self, buff):
 		Location = buff.readPosition()
