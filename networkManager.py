@@ -10,16 +10,28 @@ class NetworkManager():
 	PORT = 25565
 	buff = ''
 	s = ''
-	comp = False
-	compThreshold = 0
+	compressionThreshold = -1
 	dispatch = ''
 	packetSend = None;
 	printable = True;
+	receiveSize = 1024
 	
 	def recv(self, length):
 		return self.s.recv(length)
+
 	def send(self, data):
+		data.networkFormat(self.compressionThreshold)
 		self.s.send(data.string);
+
+	def readNewData():
+		self.buff.addRaw(self.recv(self.receiveSize))
+
+	def handleNewPackets():
+		packet = self.buff.getNextPacket()
+		while packet:
+			# handle packet here
+			packet = self.buff.getNextPacket()
+
 	def __init__(self, host, port, username, password):
 		self.dispatch = PacketDispatch(self)
 		self.buff = Buffer()
@@ -43,12 +55,10 @@ class NetworkManager():
 		packet.writeString(self.HOST);
 		packet.writeUnsignedShort(self.PORT);
 		packet.writeVarInt(2);
-		packet.writeLength();
 		self.send(packet);
 		
 		# Send login
 		packet = Buffer();
 		packet.writeVarInt(0x00);
 		packet.writeString("TheBot2");
-		packet.writeLength();
 		self.send(packet);

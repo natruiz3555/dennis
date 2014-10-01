@@ -28,12 +28,13 @@ class Buffer():
 	def getRaw(self):
 		return self.string
 	
-	def getNextPacket(self):
+	def getNextPacket(self, compression=True):
 		if self.string == "": return None
 		tmp = self.string
 		length = self.readVarInt()
 		if length <= len(self.string):
 			packet = self.readBuffer(length)
+			if compression == False: return packet
 			uncompressedSize = packet.readVarInt()
 			if(uncompressedSize != 0):
 				packet.string = zlib.decompress(packet.string)
@@ -81,15 +82,20 @@ class Buffer():
 		return metadata
 	
 	def readVarInt(self):
-		number = 0
-		reference = 0
-		byte = self.readUnsignedByte()
-		number += byte & 0x7f
-		while(byte >> 7 == 1):
-			reference += 1
+		tmp = self.string
+		try:
+			number = 0
+			reference = 0
 			byte = self.readUnsignedByte()
-			number += (byte & 0x7f) << (7 * reference)
-		return number
+			number += byte & 0x7f
+			while(byte >> 7 == 1):
+				reference += 1
+				byte = self.readUnsignedByte()
+				number += (byte & 0x7f) << (7 * reference)
+			return number
+		except TypeError:
+			self.string = tmp
+			return None
 		
 	def readVarIntandSize(self):
 		number = 0
@@ -202,9 +208,10 @@ class Buffer():
 			uncompressedSize = len(string)
 			string = zlib.compress(string)
 			compressedSize = len(string)
-			self.writeVarint(compressedSize)
-			self.writeVarint(uncompressedSize)
+			self.writeVarInt(compressedSize)
+			self.writeVarInt(uncompressedSize)
 			self.addRaw(string)
 		else:
 			self.writeVarInt(len(string));
+			self.writeVarInt("\x00")
 			self.addRaw(string);
