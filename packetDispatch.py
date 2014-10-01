@@ -17,8 +17,15 @@ class PacketDispatch():
 		self.network = network;
 
 	# Keep alive
-	#def Packet0x00(self, buff):
-	#	KeepAliveID = buff.readVarInt()
+	def Packet0x00(self, buff):
+		print buff.string.encode("hex")
+		KeepAliveID = buff.readVarInt()
+		if(KeepAliveID):
+			print "keep alive"
+			response = Buffer()
+			response.writeVarInt(0)
+			response.writeVarInt(KeepAliveID)
+			self.network.packetSend.append(response)
 	
 	
 	# Alive: Chat update
@@ -77,6 +84,18 @@ class PacketDispatch():
 		Pitch = buff.readFloat()
 		Flags = buff.readByte()
 		
+		#tempoary for login
+		print "got position"
+		response = Buffer()
+		response.writeVarInt(0x06)
+		response.writeDouble(X)
+		response.writeDouble(Y)
+		response.writeDouble(Z)
+		response.writeFloat(Yaw)
+		response.writeFloat(Pitch)
+		response.writeBool(True)
+		self.netowrk.packetSend.append(response)
+
 		if Flags%2 != 0:
 			X += self.bot.location.x;
 			Flags -= 1;
@@ -699,13 +718,6 @@ class PacketDispatch():
 		EntityID = buff.readVarInt()
 		Tag = buff.readBool()
 	
-	def Packet0x00(self, buff):
-		keepAlive = buff.readVarInt()
-		packet = Buffer();
-		packet.writeVarInt(0x00);
-		packet.writeVarInt(keepAlive)
-		packet.writeLength();
-		self.network.send(packet);
 
 	def Packet0x01(self, buff):
 		if self.bot.joined:

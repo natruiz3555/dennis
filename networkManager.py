@@ -6,16 +6,22 @@ from packetDispatch import PacketDispatch
 from PacketSend import PacketSend
 
 class NetworkManager():
-	HOST = ''
-	PORT = 25565
-	buff = ''
-	s = ''
-	compressionThreshold = -1
-	dispatch = ''
-	packetSend = []
-	printable = True
-	receiveSize = 1024
 	
+	def __init__(self, host, port, username, password):
+		self.dispatch = PacketDispatch(self)
+		self.buff = Buffer()
+		self.packetSend = []
+		self.printable = True
+		self.receiveSize = 1024
+		self.compressionThreshold = -1
+
+		self.HOST = host
+		self.PORT = port
+
+		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.s.connect((self.HOST, self.PORT))
+		self.s.setblocking(0)
+
 	def recv(self, length):
 		return self.s.recv(length)
 
@@ -37,22 +43,14 @@ class NetworkManager():
 			packetId = packet.readVarInt()
 			if packetId == 0x03:
 				self.dispatch.Packet0x03(packet)
+			elif packetId == 0x00:
+				self.dispatch.Packet0x00(packet)
 			packet = self.buff.getNextPacket(self.compressionThreshold != -1)
 
 	def sendWaitingPackets(self):
 		for packet in self.packetSend:
 			self.send(packet)
-
-	def __init__(self, host, port, username, password):
-		self.dispatch = PacketDispatch(self)
-		self.buff = Buffer()
-
-		self.HOST = host
-		self.PORT = port
-
-		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.s.connect((self.HOST, self.PORT))
-		self.s.setblocking(0)
+		self.packetSend = []
 		
 
 	def login(self):

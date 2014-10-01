@@ -6,11 +6,10 @@ import math
 compress = False
 from Location import Location
 class Buffer():
-	string = ""
-	enc = False
-	comp = False
-	compThreshold = 0
 	
+	def __init__(self):
+		self.string = ""
+
 	def read(self, count):
 		if count > len(self.string):
 			raise Exception("Reading " + str(count) + ", buffer contains " + str(len(self.string)))
@@ -209,9 +208,10 @@ class Buffer():
 			if len(string) >= compressionThreshold:
 				afterSize = len(string)
 				string = zlib.compress(string)
+				beforeSize = len(string) + math.floor(math.log(afterSize, 128))
 			else:
 				afterSize = 0
-			beforeSize = len(string) + math.floor(math.log(afterSize, 128))
+				beforeSize = len(string)
 			self.writeVarInt(beforeSize)
 			self.writeVarInt(afterSize)
 			self.addRaw(string)
