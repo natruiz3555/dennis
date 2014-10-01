@@ -12,8 +12,8 @@ class NetworkManager():
 	s = ''
 	compressionThreshold = -1
 	dispatch = ''
-	packetSend = None;
-	printable = True;
+	packetSend = []
+	printable = True
 	receiveSize = 1024
 	
 	def recv(self, length):
@@ -21,16 +21,27 @@ class NetworkManager():
 
 	def send(self, data):
 		data.networkFormat(self.compressionThreshold)
+		print "sending: " + data.string.encode("hex")
 		self.s.send(data.string);
 
-	def readNewData():
-		self.buff.addRaw(self.recv(self.receiveSize))
+	def readNewData(self):
+		try:
+			self.buff.addRaw(self.recv(self.receiveSize))
+		except socket.error, v:
+			pass
 
-	def handleNewPackets():
-		packet = self.buff.getNextPacket()
+	def handleNewPackets(self):
+		packet = self.buff.getNextPacket(self.compressionThreshold != -1)
 		while packet:
 			# handle packet here
-			packet = self.buff.getNextPacket()
+			packetId = packet.readVarInt()
+			if packetId == 0x03:
+				self.dispatch.Packet0x03(packet)
+			packet = self.buff.getNextPacket(self.compressionThreshold != -1)
+
+	def sendWaitingPackets(self):
+		for packet in self.packetSend:
+			self.send(packet)
 
 	def __init__(self, host, port, username, password):
 		self.dispatch = PacketDispatch(self)
@@ -42,8 +53,6 @@ class NetworkManager():
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.s.connect((self.HOST, self.PORT))
 		self.s.setblocking(0)
-		
-		self.packetSend = PacketSend(self);
 		
 
 	def login(self):

@@ -10,14 +10,11 @@ from Crypto.PublicKey import RSA
 from DataTypes import *
 
 class PacketDispatch():
-	sendData = []
 	bot = Bot()
-	packetSend = None;
 	network = None;
 	# Keep alive
 	def __init__(self, network):
 		self.network = network;
-		self.packetSend = network.packetSend;
 
 	# Keep alive
 	#def Packet0x00(self, buff):
@@ -41,8 +38,8 @@ class PacketDispatch():
 			self.bot.world.worldAge = buff.readLong()
 			self.bot.world.timeOfDay = buff.readLong()
 		else:
-			self.bot.comp = True
-			self.bot.compThreshold = buff.readVarInt()
+			self.network.compressionThreshold = buff.readVarInt()
+			print "compression: "  + str(self.network.compressionThreshold)
 	
 	# Entity Equipment
 	def Packet0x04(self, buff):

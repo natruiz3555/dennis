@@ -1,6 +1,7 @@
 import struct
 import Misc
 import zlib
+import math
 
 compress = False
 from Location import Location
@@ -201,17 +202,19 @@ class Buffer():
 	def writeUnsignedShort(self, number):
 		self.string += struct.pack("!H", number)
 		
-	def networkFormat(self, compressionThreshold=0):
+	def networkFormat(self, compressionThreshold=-1):
 		string = self.string;
 		self.string = "";
-		if compressionThreshold != 0 and len(string) >= compressionThreshold:
-			uncompressedSize = len(string)
-			string = zlib.compress(string)
-			compressedSize = len(string)
-			self.writeVarInt(compressedSize)
-			self.writeVarInt(uncompressedSize)
+		if compressionThreshold != -1:
+			if len(string) >= compressionThreshold:
+				afterSize = len(string)
+				string = zlib.compress(string)
+			else:
+				afterSize = 0
+			beforeSize = len(string) + math.floor(math.log(afterSize, 128))
+			self.writeVarInt(beforeSize)
+			self.writeVarInt(afterSize)
 			self.addRaw(string)
 		else:
 			self.writeVarInt(len(string));
-			self.writeVarInt("\x00")
 			self.addRaw(string);
