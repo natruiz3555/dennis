@@ -45,6 +45,30 @@ class PacketDispatch():
 			self.network.packetSend.append(response)
 	
 	
+		def Packet0x01(self, buff):
+		if self.bot.joined:
+			if self.bot.enc:
+				Time = buff.readBool()
+			else:
+				#print(buff.string.encode("hex"))
+				ServerID = buff.readString()
+				PublicKey = buff.readString()
+				VerifyToken = buff.readString()
+				self.bot.encryption = True
+				self.bot.cipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
+				self.bot.decipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
+				key2 = RSA.importKey(PublicKey)
+				key = PKCS1_v1_5.new(key2)
+		else:
+			EntityID = buff.readInt()
+			Gamemode = buff.readUnsignedByte()
+			Dimension = buff.readByte()
+			Difficulty = buff.readUnsignedByte()
+			MaxPlayers = buff.readUnsignedByte()
+			LevelType = buff.readString()
+			ReducedDebugInfo = buff.readBool()
+			self.bot.joined = True
+
 	# Alive: Chat update
 	# Dead: login info
 	def Packet0x02(self, buff):
@@ -734,33 +758,3 @@ class PacketDispatch():
 	def Packet0x49(self, buff):
 		EntityID = buff.readVarInt()
 		Tag = buff.readBool()
-	
-
-	def Packet0x01(self, buff):
-		if self.bot.joined:
-			if self.bot.enc:
-				Time = buff.readBool()
-			else:
-				#print(buff.string.encode("hex"))
-				ServerID = buff.readString()
-				PublicKey = buff.readString()
-				VerifyToken = buff.readString()
-				self.bot.encryption = True
-				self.bot.cipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
-				self.bot.decipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
-				key2 = RSA.importKey(PublicKey)
-				key = PKCS1_v1_5.new(key2)
-		else:
-			EntityID = buff.readInt()
-			Gamemode = buff.readUnsignedByte()
-			Dimension = buff.readByte()
-			Difficulty = buff.readUnsignedByte()
-			MaxPlayers = buff.readUnsignedByte()
-			LevelType = buff.readString()
-			ReducedDebugInfo = buff.readBool()
-			self.bot.joined = True
-	
-	#def Packet0x03(self, buff):
-	#	Threshold = buff.readVarInt()
-	#	print("Enabling Compression.")
-	#	DataTypes.compress = True
