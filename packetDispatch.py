@@ -111,7 +111,7 @@ class PacketDispatch():
 		response.writeFloat(Yaw)
 		response.writeFloat(Pitch)
 		response.writeBool(True)
-		self.netowrk.packetSend.append(response)
+		self.network.packetSend.append(response)
 
 		if Flags%2 != 0:
 			X += self.bot.location.x;

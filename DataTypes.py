@@ -225,10 +225,10 @@ class Buffer():
 			if len(string) >= compressionThreshold:
 				afterSize = len(string)
 				string = zlib.compress(string)
-				beforeSize = len(string) + math.floor(math.log(afterSize, 128))
+				beforeSize = len(string) + math.floor(math.log(afterSize, 128)) + 1
 			else:
 				afterSize = 0
-				beforeSize = len(string)
+				beforeSize = len(string) + 1
 			self.writeVarInt(beforeSize)
 			self.writeVarInt(afterSize)
 			self.addRaw(string)

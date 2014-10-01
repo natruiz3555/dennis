@@ -62,6 +62,8 @@ class NetworkManager():
 				self.dispatch.Packet0x03(packet)
 			elif packetId == 0x00:
 				self.dispatch.Packet0x00(packet)
+			elif packetId == 0x08:
+				self.dispatch.Packet0x08(packet)
 			packet = self.buff.getNextPacket(self.compressionThreshold != -1)
 
 	def sendWaitingPackets(self):
