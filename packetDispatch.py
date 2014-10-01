@@ -27,18 +27,22 @@ from Crypto.PublicKey import RSA
 from DataTypes import *
 
 class PacketDispatch():
-	sendData = []
 	bot = Bot()
-	packetSend = None;
 	network = None;
 	# Keep alive
 	def __init__(self, network):
 		self.network = network;
-		self.packetSend = network.packetSend;
 
 	# Keep alive
-	#def Packet0x00(self, buff):
-	#	KeepAliveID = buff.readVarInt()
+	def Packet0x00(self, buff):
+		print buff.string.encode("hex")
+		KeepAliveID = buff.readVarInt()
+		if(KeepAliveID):
+			print "keep alive"
+			response = Buffer()
+			response.writeVarInt(0)
+			response.writeVarInt(KeepAliveID)
+			self.network.packetSend.append(response)
 	
 	
 	# Alive: Chat update
@@ -58,8 +62,8 @@ class PacketDispatch():
 			self.bot.world.worldAge = buff.readLong()
 			self.bot.world.timeOfDay = buff.readLong()
 		else:
-			self.bot.comp = True
-			self.bot.compThreshold = buff.readVarInt()
+			self.network.compressionThreshold = buff.readVarInt()
+			print "compression: "  + str(self.network.compressionThreshold)
 	
 	# Entity Equipment
 	def Packet0x04(self, buff):
@@ -97,6 +101,18 @@ class PacketDispatch():
 		Pitch = buff.readFloat()
 		Flags = buff.readByte()
 		
+		#tempoary for login
+		print "got position"
+		response = Buffer()
+		response.writeVarInt(0x06)
+		response.writeDouble(X)
+		response.writeDouble(Y)
+		response.writeDouble(Z)
+		response.writeFloat(Yaw)
+		response.writeFloat(Pitch)
+		response.writeBool(True)
+		self.netowrk.packetSend.append(response)
+
 		if Flags%2 != 0:
 			X += self.bot.location.x;
 			Flags -= 1;
@@ -719,13 +735,6 @@ class PacketDispatch():
 		EntityID = buff.readVarInt()
 		Tag = buff.readBool()
 	
-	def Packet0x00(self, buff):
-		keepAlive = buff.readVarInt()
-		packet = Buffer();
-		packet.writeVarInt(0x00);
-		packet.writeVarInt(keepAlive)
-		packet.writeLength();
-		self.network.send(packet);
 
 	def Packet0x01(self, buff):
 		if self.bot.joined:

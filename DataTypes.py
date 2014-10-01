@@ -18,15 +18,15 @@
 import struct
 import Misc
 import zlib
+import math
 
 compress = False
 from Location import Location
 class Buffer():
-	string = ""
-	enc = False
-	comp = False
-	compThreshold = 0
 	
+	def __init__(self):
+		self.string = ""
+
 	def read(self, count):
 		if count > len(self.string):
 			raise Exception("Reading " + str(count) + ", buffer contains " + str(len(self.string)))
@@ -45,21 +45,17 @@ class Buffer():
 	def getRaw(self):
 		return self.string
 	
-	def getNextPacket(self):
+	def getNextPacket(self, compression=True):
 		if self.string == "": return None
 		tmp = self.string
 		length = self.readVarInt()
 		if length <= len(self.string):
-			if self.comp:
-				psize, psizelen = self.readVarIntandSize()
-				if psize != 0:
-					buff = self.readBuffer(length-psizelen)
-					buff.string = zlib.decompress(buff.string)
-					return buff
-				else:
-					return self.readBuffer(length-1)
-			else:
-				return self.readBuffer(length)
+			packet = self.readBuffer(length)
+			if compression == False: return packet
+			uncompressedSize = packet.readVarInt()
+			if(uncompressedSize != 0):
+				packet.string = zlib.decompress(packet.string)
+			return packet
 		else:
 			self.string = tmp
 			return None
@@ -103,15 +99,20 @@ class Buffer():
 		return metadata
 	
 	def readVarInt(self):
-		number = 0
-		reference = 0
-		byte = self.readUnsignedByte()
-		number += byte & 0x7f
-		while(byte >> 7 == 1):
-			reference += 1
+		tmp = self.string
+		try:
+			number = 0
+			reference = 0
 			byte = self.readUnsignedByte()
-			number += (byte & 0x7f) << (7 * reference)
-		return number
+			number += byte & 0x7f
+			while(byte >> 7 == 1):
+				reference += 1
+				byte = self.readUnsignedByte()
+				number += (byte & 0x7f) << (7 * reference)
+			return number
+		except TypeError:
+			self.string = tmp
+			return None
 		
 	def readVarIntandSize(self):
 		number = 0
@@ -217,8 +218,20 @@ class Buffer():
 	def writeUnsignedShort(self, number):
 		self.string += struct.pack("!H", number)
 		
-	def writeLength(self):
+	def networkFormat(self, compressionThreshold=-1):
 		string = self.string;
 		self.string = "";
-		self.writeVarInt(len(string));
-		self.addRaw(string);
+		if compressionThreshold != -1:
+			if len(string) >= compressionThreshold:
+				afterSize = len(string)
+				string = zlib.compress(string)
+				beforeSize = len(string) + math.floor(math.log(afterSize, 128))
+			else:
+				afterSize = 0
+				beforeSize = len(string)
+			self.writeVarInt(beforeSize)
+			self.writeVarInt(afterSize)
+			self.addRaw(string)
+		else:
+			self.writeVarInt(len(string));
+			self.addRaw(string);
