@@ -34,13 +34,15 @@ class PacketDispatch():
 
 	# Keep alive
 	def Packet0x00(self, buff):
-		KeepAliveID = buff.readVarInt()
-		if(KeepAliveID):
-			print("keep alive");
-			response = Buffer();
-			response.writeVarInt(0);
-			response.writeVarInt(KeepAliveID);
-			self.network.packetSend.append(response);
+		self.string = "";
+		return;
+		#KeepAliveID = buff.readVarInt()
+		#if(KeepAliveID):
+		#	print("keep alive: "+str(KeepAliveID));
+		#	response = Buffer();
+		#	response.writeVarInt(0);
+		#	response.writeVarInt(KeepAliveID);
+		#	self.network.packetSend.append(response);
 
 	def Packet0x01(self, buff):
 		if self.bot.joined:
@@ -90,7 +92,7 @@ class PacketDispatch():
 	def Packet0x04(self, buff):
 		EntityID = buff.readVarInt()
 		Slot = buff.readShort()
-		Item = buff.readBool()
+		Item = buff.readBool() # BOOL
 		
 		entity = self.bot.world.getEntity(EntityID);
 		entity.slot = Slot;
@@ -102,9 +104,9 @@ class PacketDispatch():
 	
 	# Update Health
 	def Packet0x06(self, buff):
-		self.bot.health = buff.readBool();
+		self.bot.health = buff.readFloat();
 		self.bot.food = buff.readVarInt();
-		self.bot.foodSaturation = buff.readBool();
+		self.bot.foodSaturation = buff.readFloat();
 	
 	# Respawn
 	def Packet0x07(self, buff):
@@ -178,15 +180,15 @@ class PacketDispatch():
 		
 	# Spawn player
 	def Packet0x0C(self, buff):
-		EntityID = buff.readVarInt()
-		PlayerUUID = buff.readBool()
-		X = buff.readInt()
-		Y = buff.readInt()
-		Z = buff.readInt()
-		Yaw = buff.readByte()
-		Pitch = buff.readByte()
-		CurrentItem = buff.readShort()
-		Metadata = buff.readMetadata()
+		EntityID = buff.readVarInt();
+		PlayerUUID = (buff.readLong() << 8) + buff.readLong();
+		X = buff.readInt();
+		Y = buff.readInt();
+		Z = buff.readInt();
+		Yaw = buff.readByte();
+		Pitch = buff.readByte();
+		CurrentItem = buff.readShort();
+		Metadata = buff.readMetadata();
 		
 		entity = self.bot.world.getEntity(EntityID);
 		entity.UUID = PlayerUUID;
@@ -402,7 +404,7 @@ class PacketDispatch():
 		
 	# Set Experience 
 	def Packet0x1F(self, buff):
-		Experiencebar = buff.readBool() # TODO: Find out if we need this
+		Experiencebar = buff.readFloat() # TODO: Find out if we need this
 		Level = buff.readVarInt()
 		TotalExperience = buff.readVarInt()
 		
@@ -440,9 +442,11 @@ class PacketDispatch():
 		ChunkX = buff.readInt();
 		ChunkZ = buff.readInt();
 		GroundUpcontinuous = buff.readBool();	
-		Primarybitmap = buff.readBool();
+		Primarybitmap = buff.readUnsignedByte();
 		Size = buff.readVarInt();
-		Data = buff.readBool();
+		Data = "";
+		if i in range(Size):
+			Data += buff.readByte();
 		
 		
 	# Multi Block Change
@@ -490,15 +494,13 @@ class PacketDispatch():
 		print("DestroyStage: "+DestroyStage);
 	
 	def Packet0x26(self, buff):
-		buff.string = ""
-	#	Skylightsent = buff.readBool()
-	#	Chunkcolumncount = buff.readVarInt()
-	#	while Chunkcolumncount > 0:
-	#		CX = buff.readInt()
-	#		CZ = buff.readInt()
-	#		PBitmap = buff.readShort()
-	#		Data = buff.readString()
-	#		Chunkcolumncount -= 1
+		Skylightsent = buff.readBool()
+		Chunkcolumncount = buff.readVarInt()
+		CX = buff.readInt()
+		CZ = buff.readInt()
+		PBitmap = buff.readShort()
+		for i in range(Chunkcolumncount):
+			Data = buff.readString()
 	
 	def Packet0x27(self, buff):
 		X = buff.readBool()
