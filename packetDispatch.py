@@ -18,8 +18,7 @@
 from Bot import Bot
 from Entity import Entity
 from World import World
-from Location import Location
-from Effect import Effect
+#from Effect import Effect
 from Crypto.Cipher import PKCS1_v1_5
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA
@@ -46,28 +45,28 @@ class PacketDispatch():
 	
 	
 		def Packet0x01(self, buff):
-		if self.bot.joined:
-			if self.bot.enc:
-				Time = buff.readBool()
+			if self.bot.joined:
+				if self.bot.enc:
+					Time = buff.readBool()
+				else:
+					#print(buff.string.encode("hex"))
+					ServerID = buff.readString()
+					PublicKey = buff.readString()
+					VerifyToken = buff.readString()
+					self.bot.encryption = True
+					self.bot.cipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
+					self.bot.decipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
+					key2 = RSA.importKey(PublicKey)
+					key = PKCS1_v1_5.new(key2)
 			else:
-				#print(buff.string.encode("hex"))
-				ServerID = buff.readString()
-				PublicKey = buff.readString()
-				VerifyToken = buff.readString()
-				self.bot.encryption = True
-				self.bot.cipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
-				self.bot.decipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
-				key2 = RSA.importKey(PublicKey)
-				key = PKCS1_v1_5.new(key2)
-		else:
-			EntityID = buff.readInt()
-			Gamemode = buff.readUnsignedByte()
-			Dimension = buff.readByte()
-			Difficulty = buff.readUnsignedByte()
-			MaxPlayers = buff.readUnsignedByte()
-			LevelType = buff.readString()
-			ReducedDebugInfo = buff.readBool()
-			self.bot.joined = True
+				EntityID = buff.readInt()
+				Gamemode = buff.readUnsignedByte()
+				Dimension = buff.readByte()
+				Difficulty = buff.readUnsignedByte()
+				MaxPlayers = buff.readUnsignedByte()
+				LevelType = buff.readString()
+				ReducedDebugInfo = buff.readBool()
+				self.bot.joined = True
 
 	# Alive: Chat update
 	# Dead: login info
@@ -460,25 +459,37 @@ class PacketDispatch():
 			y = position & 0x00FF;
 			z = position & 0x0F00;
 			BlockID = buff.readVarInt();
-			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = BlockID;
+			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = (BlockID, 0, 0);
 	
+	# Block Change
 	def Packet0x23(self, buff):
-		Location = buff.readPosition()
-		BlockID = buff.readVarInt()
+		Location = buff.readPosition();
+		BlockID = buff.readVarInt();
 		
-		self.bot.world.blocks[Location.get()] = BlockID;
+		self.bot.world.blocks[Location.get()] = (BlockID, 0, 0);
 		
-	
+	# Block Action
 	def Packet0x24(self, buff):
-		Location = buff.readPosition()
-		Byte1 = buff.readUnsignedByte()
-		Byte2 = buff.readUnsignedByte()
-		BlockType = buff.readVarInt()
+		Location = buff.readPosition();
+		Byte1 = buff.readUnsignedByte();
+		Byte2 = buff.readUnsignedByte();
+		BlockType = buff.readVarInt();
+		
+		data = self.bot.world.blocks[Location.get()];
+		self.bot.world.blocks[Location.get()] = (data[0], Byte1, Byte2);
+		print("Location: "+Location);
+		print("Byte1: "+Byte1);
+		print("Byte2: "+Byte2);
+		print("BlockType: "+BlockType);
 	
 	def Packet0x25(self, buff):
-		EntityID = buff.readVarInt()
-		Location = buff.readPosition()
-		DestroyStage = buff.readByte()
+		EntityID = buff.readVarInt();
+		Location = buff.readPosition();
+		DestroyStage = buff.readByte();
+		
+		print("EntityID: "+EntityID);
+		print("Location: "+Location);
+		print("DestroyStage: "+DestroyStage);
 	
 	def Packet0x26(self, buff):
 		buff.string = ""
