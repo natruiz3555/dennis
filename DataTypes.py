@@ -19,7 +19,7 @@ import struct
 import Misc
 import zlib
 import math
-
+import traceback;
 compress = False
 from Location import Location
 class Buffer():
@@ -34,9 +34,12 @@ class Buffer():
 		self.string = self.string[count:]
 		return string
 	
-	def readBuffer(self, count):
+	def readBuffer(self, count, source=None):
 		buffer = Buffer()
-		buffer.addRaw(self.read(count))
+		if source == None:
+			buffer.addRaw(self.read(count))
+		else:
+			buffer.addRaw(source.recv(count));
 		return buffer
 	
 	def addRaw(self, string):
@@ -45,20 +48,23 @@ class Buffer():
 	def getRaw(self):
 		return self.string
 	
-	def getNextPacket(self, compression=True):
-		if self.string == "": return None
-		tmp = self.string
-		length = self.readVarInt()
-		if length <= len(self.string):
-			packet = self.readBuffer(length)
-			if compression == False: return packet
+	def getNextPacket(self, compression=True, source=None):
+		if self.string == "" and source == None:
+			return None;
+		tmp = self.string;
+		length = self.readVarInt(source);
+		if source != None:
+			packet = self.readBuffer(length, source)
+			if compression == False:
+				return packet;
 			uncompressedSize = packet.readVarInt()
 			if(uncompressedSize != 0):
 				packet.string = zlib.decompress(packet.string)
 			return packet
 		else:
 			self.string = tmp
-			return None
+			print("no source");
+			return None;
 	
 	def readObjectData(self):
 		objectData = {}
@@ -98,16 +104,16 @@ class Buffer():
 			key = self.readUnsignedByte()
 		return metadata
 	
-	def readVarInt(self):
+	def readVarInt(self, source=None):
 		tmp = self.string
 		try:
 			number = 0
 			reference = 0
-			byte = self.readUnsignedByte()
+			byte = self.readUnsignedByte(source)
 			number += byte & 0x7f
 			while(byte >> 7 == 1):
 				reference += 1
-				byte = self.readUnsignedByte()
+				byte = self.readUnsignedByte(source)
 				number += (byte & 0x7f) << (7 * reference)
 			return number
 		except TypeError:
@@ -159,8 +165,11 @@ class Buffer():
 	def readByte(self):
 		return struct.unpack("!b", self.read(1))[0]
 	
-	def readUnsignedByte(self):
-		return struct.unpack("!B", self.read(1))[0]
+	def readUnsignedByte(self, source=None):
+		if source == None:
+			return struct.unpack("!B", self.read(1))[0];
+		else:
+			return struct.unpack("!B", source.recv(1))[0];
 	
 
 

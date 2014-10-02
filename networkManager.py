@@ -21,6 +21,7 @@ from DataTypes import Buffer
 import time
 from packetDispatch import PacketDispatch
 from PacketSend import PacketSend
+import os
 
 class NetworkManager():
 	
@@ -37,14 +38,14 @@ class NetworkManager():
 
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.s.connect((self.HOST, self.PORT))
-		self.s.setblocking(0)
+		self.s.setblocking(True)
 
 	def recv(self, length):
 		return self.s.recv(length)
 
 	def send(self, data):
 		data.networkFormat(self.compressionThreshold)
-		print "sending: " + data.string.encode("hex")
+		print("->" + data.string.encode("hex"));
 		self.s.send(data.string);
 
 	def readNewData(self):
@@ -53,23 +54,23 @@ class NetworkManager():
 		except socket.error, v:
 			pass
 
-	def handleNewPackets(self):
-		packet = self.buff.getNextPacket(self.compressionThreshold != -1)
-		while packet:
+	def handleNewPackets(self, source=None):
+		packet = self.buff.getNextPacket(self.compressionThreshold != -1, source)
+		#while packet:
 			# handle packet here
-			packetId = packet.readVarInt()
-			if packetId == 0x03:
-				self.dispatch.Packet0x03(packet)
-			elif packetId == 0x00:
-				self.dispatch.Packet0x00(packet)
-			elif packetId == 0x08:
-				self.dispatch.Packet0x08(packet)
-			packet = self.buff.getNextPacket(self.compressionThreshold != -1)
+		packetId = hex(packet.readVarInt());
+		while len(packetId) < 4:
+			packetId = "0x0" + packetId[2:];
+		packetId = packetId.upper().replace("X", "x")
+		print("<-"+packetId+": "+packet.string.encode("hex"));
+		getattr(self.dispatch, "Packet"+packetId)(packet);
+		#	packet = self.buff.getNextPacket(self.compressionThreshold != -1)
 
 	def sendWaitingPackets(self):
 		for packet in self.packetSend:
 			self.send(packet)
-		self.packetSend = []
+			self.packetSend.remove(packet);
+		#self.packetSend = []
 		
 
 	def login(self):

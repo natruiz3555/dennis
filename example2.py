@@ -1,6 +1,6 @@
 #!/usr/bin/python2
 #
-#  Copyright 2014 Nathan Ruiz <natruiz3553@gmail.com>
+#  Copyright 2014 Darcy Ryan <darcy150@gmail.com>
 # 
 # McBot is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ network = NetworkManager('localhost', 25565, 'Thebot', 'password')
 network.login()
 
 while True:
-	network.readNewData()
-	network.handleNewPackets()
-	network.sendWaitingPackets()
+	#network.readNewData()
+	#network.handleNewPackets()
+	#network.sendWaitingPackets()
+	network.handleNewPackets(network);
+	network.sendWaitingPackets();

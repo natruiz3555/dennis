@@ -34,39 +34,37 @@ class PacketDispatch():
 
 	# Keep alive
 	def Packet0x00(self, buff):
-		print buff.string.encode("hex")
 		KeepAliveID = buff.readVarInt()
 		if(KeepAliveID):
-			print "keep alive"
-			response = Buffer()
-			response.writeVarInt(0)
-			response.writeVarInt(KeepAliveID)
-			self.network.packetSend.append(response)
-	
-	
-		def Packet0x01(self, buff):
-			if self.bot.joined:
-				if self.bot.enc:
-					Time = buff.readBool()
-				else:
-					#print(buff.string.encode("hex"))
-					ServerID = buff.readString()
-					PublicKey = buff.readString()
-					VerifyToken = buff.readString()
-					self.bot.encryption = True
-					self.bot.cipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
-					self.bot.decipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
-					key2 = RSA.importKey(PublicKey)
-					key = PKCS1_v1_5.new(key2)
+			print("keep alive");
+			response = Buffer();
+			response.writeVarInt(0);
+			response.writeVarInt(KeepAliveID);
+			self.network.packetSend.append(response);
+
+	def Packet0x01(self, buff):
+		if self.bot.joined:
+			if self.bot.enc:
+				Time = buff.readBool()
 			else:
-				EntityID = buff.readInt()
-				Gamemode = buff.readUnsignedByte()
-				Dimension = buff.readByte()
-				Difficulty = buff.readUnsignedByte()
-				MaxPlayers = buff.readUnsignedByte()
-				LevelType = buff.readString()
-				ReducedDebugInfo = buff.readBool()
-				self.bot.joined = True
+				#print(buff.string.encode("hex"))
+				ServerID = buff.readString()
+				PublicKey = buff.readString()
+				VerifyToken = buff.readString()
+				self.bot.encryption = True
+				self.bot.cipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
+				self.bot.decipher = AES.new(self.bot.secret, AES.MODE_CFB, self.bot.secret)
+				key2 = RSA.importKey(PublicKey)
+				key = PKCS1_v1_5.new(key2)
+		else:
+			EntityID = buff.readInt()
+			Gamemode = buff.readUnsignedByte()
+			Dimension = buff.readByte()
+			Difficulty = buff.readUnsignedByte()
+			MaxPlayers = buff.readUnsignedByte()
+			LevelType = buff.readString()
+			ReducedDebugInfo = buff.readBool()
+			self.bot.joined = True
 
 	# Alive: Chat update
 	# Dead: login info
