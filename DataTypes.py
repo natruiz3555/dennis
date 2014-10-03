@@ -111,7 +111,7 @@ class Buffer():
 			reference = 0
 			byte = self.readUnsignedByte(source)
 			number += byte & 0x7f
-			while(byte >> 7 == 1):
+			while byte >> 7 == 1 and reference < 4:
 				reference += 1
 				byte = self.readUnsignedByte(source)
 				number += (byte & 0x7f) << (7 * reference)
