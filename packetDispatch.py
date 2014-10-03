@@ -503,10 +503,10 @@ class PacketDispatch():
 			Data = buff.readString()
 	
 	def Packet0x27(self, buff):
-		X = buff.readBool()
-		Y = buff.readBool()
-		Z = buff.readBool()
-		Radius = buff.readBool()
+		X = buff.readFloat()
+		Y = buff.readFloat()
+		Z = buff.readFloat()
+		Radius = buff.readFloat()
 		Recordcount = buff.readInt()
 		Records = buff.readBool()
 		PlayerMotionX = buff.readBool()

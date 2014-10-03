@@ -58,12 +58,13 @@ class NetworkManager():
 		packet = self.buff.getNextPacket(self.compressionThreshold != -1, source)
 		#while packet:
 			# handle packet here
-		packetId = hex(packet.readVarInt());
-		while len(packetId) < 4:
-			packetId = "0x0" + packetId[2:];
-		packetId = packetId.upper().replace("X", "x")
-		print("<-"+packetId+": "+packet.string.encode("hex"));
-		getattr(self.dispatch, "Packet"+packetId)(packet);
+		if len(packet.string) > 1:
+			packetId = hex(packet.readVarInt());
+			while len(packetId) < 4:
+				packetId = "0x0" + packetId[2:];
+			packetId = packetId.upper().replace("X", "x")
+			print("<-"+packetId+": "+packet.string.encode("hex"));
+			getattr(self.dispatch, "Packet"+packetId)(packet);
 		#	packet = self.buff.getNextPacket(self.compressionThreshold != -1)
 
 	def sendWaitingPackets(self):
