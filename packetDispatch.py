@@ -445,8 +445,8 @@ class PacketDispatch():
 		Primarybitmap = buff.readUnsignedByte();
 		Size = buff.readVarInt();
 		Data = "";
-		if i in range(Size):
-			Data += buff.readByte();
+		for i in range(Size):
+			Data += str(buff.readByte());
 		
 		
 	# Multi Block Change
@@ -496,11 +496,11 @@ class PacketDispatch():
 	def Packet0x26(self, buff):
 		Skylightsent = buff.readBool()
 		Chunkcolumncount = buff.readVarInt()
-		CX = buff.readInt()
-		CZ = buff.readInt()
-		PBitmap = buff.readShort()
 		for i in range(Chunkcolumncount):
-			Data = buff.readString()
+			CX = buff.readInt()
+			CZ = buff.readInt()
+			PBitmap = buff.readShort()
+			Data = buff.readUnsignedByte()
 	
 	def Packet0x27(self, buff):
 		X = buff.readFloat()

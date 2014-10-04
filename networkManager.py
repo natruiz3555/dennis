@@ -45,7 +45,7 @@ class NetworkManager():
 
 	def send(self, data):
 		data.networkFormat(self.compressionThreshold)
-		print("->" + data.string.encode("hex"));
+		#print("->" + data.string.encode("hex"));
 		self.s.send(data.string);
 
 	def readNewData(self):
@@ -63,7 +63,7 @@ class NetworkManager():
 			while len(packetId) < 4:
 				packetId = "0x0" + packetId[2:];
 			packetId = packetId.upper().replace("X", "x")
-			print("<-"+packetId+": "+packet.string.encode("hex"));
+			#print("<-"+packetId+": "+packet.string.encode("hex"));
 			getattr(self.dispatch, "Packet"+packetId)(packet);
 		#	packet = self.buff.getNextPacket(self.compressionThreshold != -1)
 
