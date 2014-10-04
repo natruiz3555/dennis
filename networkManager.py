@@ -49,16 +49,13 @@ class NetworkManager():
 		self.s.send(data.string);
 
 	def readNewData(self):
-		try:
-			self.buff.addRaw(self.recv(self.receiveSize))
-		except socket.error, v:
-			pass
+		self.buff.addRaw(self.recv(self.receiveSize))
 
 	def handleNewPackets(self, source=None):
-		packet = self.buff.getNextPacket(self.compressionThreshold != -1, source)
+		packet = self.buff.getNextPacket(self.compressionThreshold, source)
 		#while packet:
 			# handle packet here
-		if len(packet.string) > 1:
+		if isinstance(packet, Buffer) and len(packet.string) > 0:
 			packetId = hex(packet.readVarInt());
 			while len(packetId) < 4:
 				packetId = "0x0" + packetId[2:];

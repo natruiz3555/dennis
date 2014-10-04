@@ -20,8 +20,9 @@ import Misc
 import zlib
 import math
 import traceback;
-compress = False
 from Location import Location
+
+compress = False
 class Buffer():
 	
 	def __init__(self):
@@ -43,27 +44,28 @@ class Buffer():
 		return buffer
 	
 	def addRaw(self, string):
-		self.string += string
+		if string != None:
+			self.string += string
 	
 	def getRaw(self):
 		return self.string
 	
-	def getNextPacket(self, compression=True, source=None):
+	def getNextPacket(self, compression=-1, source=None):
 		if self.string == "" and source == None:
 			return None;
 		tmp = self.string;
 		length = self.readVarInt(source);
-		if source != None:
-			packet = self.readBuffer(length, source)
-			if compression == False:
+		if source != None or length > 0:
+			packet = self.readBuffer(length, source);
+			if compression == -1:
 				return packet;
-			uncompressedSize = packet.readVarInt()
-			if(uncompressedSize != 0):
-				packet.string = zlib.decompress(packet.string)
-			return packet
+			uncompressedSize = packet.readVarInt();
+			if uncompressedSize >= compression:
+				packet.string = zlib.decompress(packet.string);
+			return packet;
 		else:
 			self.string = tmp
-			print("no source");
+			#print("no source");
 			return None;
 	
 	def readObjectData(self):
@@ -106,19 +108,19 @@ class Buffer():
 	
 	def readVarInt(self, source=None):
 		tmp = self.string
-		try:
-			number = 0
-			reference = 0
+		#try:
+		number = 0
+		reference = 0
+		byte = self.readUnsignedByte(source)
+		number += byte & 0x7f
+		while byte >> 7 == 1 and reference < 4:
+			reference += 1
 			byte = self.readUnsignedByte(source)
-			number += byte & 0x7f
-			while byte >> 7 == 1 and reference < 4:
-				reference += 1
-				byte = self.readUnsignedByte(source)
-				number += (byte & 0x7f) << (7 * reference)
-			return number
-		except TypeError:
-			self.string = tmp
-			return None
+			number += (byte & 0x7f) << (7 * reference)
+		return number
+		#except TypeError:
+		#	self.string = tmp
+		#	return None
 		
 	def readVarIntandSize(self):
 		number = 0
@@ -169,8 +171,8 @@ class Buffer():
 		if source == None:
 			return struct.unpack("!B", self.read(1))[0];
 		else:
-			return struct.unpack("!B", source.recv(1))[0];
-	
+			data = source.recv(1);	
+			return struct.unpack("!B", data)[0];
 
 
 	def writeSlot(self, slot):
