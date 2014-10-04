@@ -38,7 +38,7 @@ class NetworkManager():
 
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.s.connect((self.HOST, self.PORT))
-		self.s.setblocking(True)
+		#self.s.setblocking(True)
 
 	def recv(self, length):
 		return self.s.recv(length)

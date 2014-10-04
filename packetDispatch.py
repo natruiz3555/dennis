@@ -461,14 +461,20 @@ class PacketDispatch():
 			y = position & 0x00FF;
 			z = position & 0x0F00;
 			BlockID = buff.readVarInt();
-			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = (BlockID, 0, 0);
+			block = Block();
+			block.location.set(x+ChunkX, y, z+ChunkZ);
+			block.blockID += BlockID;
+			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = block;
 	
 	# Block Change
 	def Packet0x23(self, buff):
 		Location = buff.readPosition();
 		BlockID = buff.readVarInt();
 		
-		self.bot.world.blocks[Location.get()] = (BlockID, 0, 0);
+		block = Block();
+		block.location = Location;
+		block.blockID += BlockID;
+		self.bot.world.blocks[Location.get()] = block;
 		
 	# Block Action
 	def Packet0x24(self, buff):
@@ -477,12 +483,11 @@ class PacketDispatch():
 		Byte2 = buff.readUnsignedByte();
 		BlockType = buff.readVarInt();
 		
-		data = self.bot.world.blocks[Location.get()];
-		self.bot.world.blocks[Location.get()] = (data[0], Byte1, Byte2);
-		print("Location: "+Location);
-		print("Byte1: "+Byte1);
-		print("Byte2: "+Byte2);
-		print("BlockType: "+BlockType);
+		block = self.bot.world.blocks[Location.get()];
+		block.location = Location;
+		block.blockType = BlockType
+		block.blockAction = [Byte1, Byte2];
+		self.bot.world.blocks[Location.get()] = block;
 	
 	def Packet0x25(self, buff):
 		EntityID = buff.readVarInt();
