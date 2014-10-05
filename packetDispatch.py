@@ -462,7 +462,7 @@ class PacketDispatch():
 			BlockID = buff.readVarInt();
 			block = Block();
 			block.location.set(x+ChunkX, y, z+ChunkZ);
-			block.blockID += BlockID;
+			block.blockID = BlockID;
 			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = block;
 	
 	# Block Change
