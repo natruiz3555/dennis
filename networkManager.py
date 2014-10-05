@@ -33,6 +33,7 @@ class NetworkManager():
 		self.printable = True
 		self.receiveSize = 1024
 		self.compressionThreshold = -1
+		self.username = username;
 
 		self.HOST = host
 		self.PORT = port
@@ -107,7 +108,7 @@ class NetworkManager():
 		# Send login
 		packet = Buffer();
 		packet.writeVarInt(0x00);
-		packet.writeString("TheBot2");
+		packet.writeString(self.username);
 		self.send(packet);
 		
 		# Start main network loop
