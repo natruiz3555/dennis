@@ -21,9 +21,9 @@ class Location():
 	z = None;
 	printable = True;
 	def set(self, x, y, z):
-		self.x = x;
-		self.y = y;
-		self.z = z;
+		self.x = float(x);
+		self.y = float(y);
+		self.z = float(z);
 	def add(self, x, y, z):
 		self.x += x;
 		self.y += y;

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
+import thread
 import socket
 import zlib
 from DataTypes import Buffer
@@ -75,10 +75,23 @@ class NetworkManager():
 		#self.packetSend = []
 		
 
-	def networkLoop():
+	def networkLoop(self):
 		while True:
-			network.handleNewPackets(network);
-			network.sendWaitingPackets();
+			self.handleNewPackets(self);
+			self.sendWaitingPackets();
+
+	def beginUpdatePositions(self):
+		while True:
+			thread.start_new_thread(self.updatePosition, ());
+			time.sleep(0.05);
+
+	# updates location every 50 ms
+	def updatePosition(self):
+		bot = self.dispatch.bot;
+		location = bot.location;
+		if location.x != None and location.y != None and location.z != None:
+			self.sendPacket.Packet0x04(location.x, location.y, location.z, bot.onGround);
+		return True;
 
 	def login(self):
 		global sendData
@@ -98,6 +111,9 @@ class NetworkManager():
 		self.send(packet);
 		
 		# Start main network loop
-		thread.start_new_thread(networkLoop, ());
+		thread.start_new_thread(self.networkLoop, ());
+
+		# Start position update loop
+		thread.start_new_thread(self.beginUpdatePositions, ());
 
 		self.dispatch.bot.loggedIn = True;

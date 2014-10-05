@@ -50,40 +50,40 @@ def getObjectData(data):
 
 connected = False;
 print("Connecting...");
-while True:
-	if network.dispatch.bot.loggedIn:
-		connected = True;
-		a = raw_input("mcBot> ");
-		if a[:4] == "stop" or a[:4] == "quit" or a[:4] == "exit":
-			print("Shutting down...");
-			exit();
-		elif a[:7] == "getData":
-			print("Data:");
-			pprint(getObjectData(network.dispatch.bot));
-		elif a[:4] == "move":
-			args = a[4:];
-			b = args.split(" ");
-			b.remove("");
-			if len(b) == 4:
-				if b[3] == "True":
-					b[3] = True;
-				else:
-					b[3] = False;
-				network.sendPacket.Packet0x04(float(b[0]), float(b[1]), float(b[2]), b[3]);
-			else:
-				print("usage: move <x> <y> <z> <onGround>");
-		elif a == "":
-			pass;
-		elif a[:4] == "help":
-			print """stop/quit/exit - halt the program
-getData - Get object data
-move - Move to to a location
-help - guess"""
-		else:
-			print("Invalid command");
-	elif connected == True:
-		print("Connection Terminated");
-		exit();
-	else:
-		print(network.dispatch.bot.loggedIn);
-		time.sleep(1)
+#while True:
+#	if network.dispatch.bot.loggedIn:
+#		connected = True;
+#		a = raw_input("mcBot> ");
+#		if a[:4] == "stop" or a[:4] == "quit" or a[:4] == "exit":
+#			print("Shutting down...");
+#			exit();
+#		elif a[:7] == "getData":
+#			print("Data:");
+#			pprint(getObjectData(network.dispatch.bot));
+#		elif a[:4] == "move":
+#			args = a[4:];
+#			b = args.split(" ");
+#			b.remove("");
+#			if len(b) == 4:
+#				if b[3] == "True":
+#					b[3] = True;
+#				else:
+#					b[3] = False;
+#				network.sendPacket.Packet0x04(float(b[0]), float(b[1]), float(b[2]), b[3]);
+#			else:
+#				print("usage: move <x> <y> <z> <onGround>");
+#		elif a == "":
+#			pass;
+#		elif a[:4] == "help":
+#			print """stop/quit/exit - halt the program
+#getData - Get object data
+#move - Move to to a location
+#help - guess"""
+#		else:
+#			print("Invalid command");
+#	elif connected == True:
+#		print("Connection Terminated");
+#		exit();
+#	else:
+#		print(network.dispatch.bot.loggedIn);
+#		time.sleep(1)

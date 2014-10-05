@@ -26,8 +26,8 @@ class PacketSend():
 	def Packet0x04(self, X, Y, Z, onGround):
 		packet = Buffer();
 		packet.writeVarInt(0x04);
-		packet.writeDouble(X);
-		packet.writeDouble(Y-1.62);
-		packet.writeDouble(Z);
+		packet.writeDouble(float(X));
+		packet.writeDouble(float(Y-1.62));
+		packet.writeDouble(float(Z));
 		packet.writeBool(True);
 		self.network.send(packet);
