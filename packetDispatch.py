@@ -531,17 +531,20 @@ class PacketDispatch():
 	def Packet0x2A(self, buff):
 		ParticleId = buff.readInt()
 		LongDistance = buff.readBool()
-		X = buff.readBool()
-		Y = buff.readBool()
-		Z = buff.readBool()
-		OffsetX = buff.readBool()
-		OffsetY = buff.readBool()
-		OffsetZ = buff.readBool()
-		Particledata = buff.readBool()
+		X = buff.readFloat()
+		Y = buff.readFloat()
+		Z = buff.readFloat()
+		OffsetX = buff.readFloat()
+		OffsetY = buff.readFloat()
+		OffsetZ = buff.readFloat()
+		Particledata = buff.readFloat()
 		Numberofparticles = buff.readInt()
 		Data = [];
-		for i in range(Numberofparticles):
-			Data.append(buff.readVarInt());
+		# After testing, found that ParticleId 38 is recieved from falling
+		if ParticleId >= 0 and ParticleId <=35:
+			pass; # No data required
+		else:
+			print("New particle found with ID: "+str(ParticleId));
 			
 	
 	def Packet0x2B(self, buff):
