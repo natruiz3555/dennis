@@ -29,27 +29,28 @@ network = NetworkManager('localhost', 25565, 'Thebot', 'password')
 network.login()
 
 def getObjectData(data):
-       dataObject = {};
-       for j in dir(data):
-               k = getattr(data, j); 
-               if j[0] != "_" and j != "printable":
-                       if k != types.NoneType and hasattr(k, 'printable') and k.printable == True: 
-                               k = getObjectData(k);
-                               dataObject[j] = k;
-                       elif isinstance(k, list):
-                               k = [];
-                               for l in k:
-                                       if l != types.NoneType and hasattr(l, 'printable') and l.printable == True:
-                                                       l = getObjectData(l);
-                                       k.append(l);
-                       elif isinstance(k, types.MethodType):
-                               continue
-                       dataObject[j] = k;
+	dataObject = {};
+	for j in dir(data):
+		k = getattr(data, j); 
+		if j[0] != "_" and j != "printable":
+			if k != types.NoneType and hasattr(k, 'printable') and k.printable == True: 
+				k = getObjectData(k);
+				dataObject[j] = k;
+			elif isinstance(k, list):
+				k = [];
+				for l in k:
+					if l != types.NoneType and hasattr(l, 'printable') and l.printable == True:
+						l = getObjectData(l);
+					k.append(l);
+			elif isinstance(k, types.MethodType):
+				continue
+			dataObject[j] = k;
 
 
 def networkLoop():
-        network.handleNewPackets(network);
-        network.sendWaitingPackets();
+	while True:
+		network.handleNewPackets(network);
+		network.sendWaitingPackets();
 
 thread.start_new_thread(networkLoop, ());
 
@@ -74,7 +75,7 @@ while True:
 					b[3] = True;
 				else:
 					b[3] = False;
-				network.packetSend.Packet0x04(float(b[0]), float(b[1]), float(b[2]), b[3]);
+				network.sendPacket.Packet0x04(float(b[0]), float(b[1]), float(b[2]), b[3]);
 			else:
 				print("usage: move <x> <y> <z> <onGround>");
 		elif a == "":

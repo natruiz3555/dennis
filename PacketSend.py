@@ -30,5 +30,4 @@ class PacketSend():
 		packet.writeDouble(Y-1.62);
 		packet.writeDouble(Z);
 		packet.writeBool(True);
-		packet.writeLength()
 		self.network.send(packet);

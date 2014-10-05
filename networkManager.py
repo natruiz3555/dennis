@@ -28,7 +28,8 @@ class NetworkManager():
 	def __init__(self, host, port, username, password):
 		self.dispatch = PacketDispatch(self)
 		self.buff = Buffer()
-		self.packetSend = []
+		self.packetSend = [];
+		self.sendPacket = PacketSend(self);
 		self.printable = True
 		self.receiveSize = 1024
 		self.compressionThreshold = -1

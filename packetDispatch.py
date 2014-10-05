@@ -37,7 +37,6 @@ class PacketDispatch():
 	def Packet0x00(self, buff):
 		KeepAliveID = buff.readVarInt()
 		if(KeepAliveID):
-			print("keep alive: "+str(KeepAliveID));
 			response = Buffer();
 			response.writeVarInt(0);
 			response.writeVarInt(KeepAliveID);
@@ -85,7 +84,6 @@ class PacketDispatch():
 			self.bot.world.timeOfDay = buff.readLong()
 		else:
 			self.network.compressionThreshold = buff.readVarInt()
-			print "compression: "  + str(self.network.compressionThreshold)
 	
 	# Entity Equipment
 	def Packet0x04(self, buff):
@@ -124,7 +122,6 @@ class PacketDispatch():
 		Flags = buff.readByte()
 		
 		#tempoary for login
-		print "got position"
 		response = Buffer()
 		response.writeVarInt(0x06)
 		response.writeDouble(X)
