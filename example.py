@@ -47,12 +47,6 @@ def getObjectData(data):
 			dataObject[j] = k;
 
 
-def networkLoop():
-	while True:
-		network.handleNewPackets(network);
-		network.sendWaitingPackets();
-
-thread.start_new_thread(networkLoop, ());
 
 connected = False;
 print("Connecting...");

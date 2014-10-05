@@ -75,6 +75,11 @@ class NetworkManager():
 		#self.packetSend = []
 		
 
+	def networkLoop():
+		while True:
+			network.handleNewPackets(network);
+			network.sendWaitingPackets();
+
 	def login(self):
 		global sendData
 		# Send handshake
@@ -91,4 +96,8 @@ class NetworkManager():
 		packet.writeVarInt(0x00);
 		packet.writeString("TheBot2");
 		self.send(packet);
+		
+		# Start main network loop
+		thread.start_new_thread(networkLoop, ());
+
 		self.dispatch.bot.loggedIn = True;
