@@ -38,10 +38,13 @@ class NetworkManager():
 
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.s.connect((self.HOST, self.PORT))
-		#self.s.setblocking(True)
+		self.s.setblocking(1)
 
 	def recv(self, length):
-		return self.s.recv(length)
+		data = self.s.recv(length)
+		if len(data) < length:
+			raise Exception("Requested "+str(length)+" bytes but recieved "+str(len(data)))
+		return data;
 
 	def send(self, data):
 		data.networkFormat(self.compressionThreshold)

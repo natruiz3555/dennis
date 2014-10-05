@@ -24,6 +24,7 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA
 from Crypto.PublicKey import RSA
 from DataTypes import *
+from Block import Block
 
 class PacketDispatch():
 	bot = Bot()
@@ -34,15 +35,13 @@ class PacketDispatch():
 
 	# Keep alive
 	def Packet0x00(self, buff):
-		self.string = "";
-		return;
-		#KeepAliveID = buff.readVarInt()
-		#if(KeepAliveID):
-		#	print("keep alive: "+str(KeepAliveID));
-		#	response = Buffer();
-		#	response.writeVarInt(0);
-		#	response.writeVarInt(KeepAliveID);
-		#	self.network.packetSend.append(response);
+		KeepAliveID = buff.readVarInt()
+		if(KeepAliveID):
+			print("keep alive: "+str(KeepAliveID));
+			response = Buffer();
+			response.writeVarInt(0);
+			response.writeVarInt(KeepAliveID);
+			self.network.packetSend.append(response);
 
 	def Packet0x01(self, buff):
 		if self.bot.joined:
@@ -473,7 +472,7 @@ class PacketDispatch():
 		
 		block = Block();
 		block.location = Location;
-		block.blockID += BlockID;
+		block.blockID = BlockID;
 		self.bot.world.blocks[Location.get()] = block;
 		
 	# Block Action

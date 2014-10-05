@@ -1,3 +1,4 @@
+from Location import Location;
 class Block():
 	location = Location();
 	destroyStage = 0;
