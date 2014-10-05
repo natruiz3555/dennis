@@ -28,8 +28,5 @@ network = NetworkManager('localhost', 25565, 'Thebot', 'password')
 network.login()
 
 while True:
-	#network.readNewData()
-	#network.handleNewPackets()
-	#network.sendWaitingPackets()
 	network.handleNewPackets(network);
 	network.sendWaitingPackets();

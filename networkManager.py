@@ -90,3 +90,4 @@ class NetworkManager():
 		packet.writeVarInt(0x00);
 		packet.writeString("TheBot2");
 		self.send(packet);
+		self.dispatch.bot.loggedIn = True;
