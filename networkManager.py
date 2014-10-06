@@ -19,6 +19,7 @@ import socket
 import zlib
 from DataTypes import Buffer
 import time
+from Location import Location
 from packetDispatch import PacketDispatch
 from PacketSend import PacketSend
 import os
@@ -26,6 +27,13 @@ import os
 class NetworkManager():
 	
 	def __init__(self, host, port, username, password):
+		self.origin = Location();
+		self.origin.set(130, 71, 83);
+		self.range = Location();
+		self.range.set(10,10,10);
+		self.X = 0;
+		self.Y = 0;
+		self.Z = 0;
 		self.dispatch = PacketDispatch(self)
 		self.buff = Buffer()
 		self.packetSend = [];
@@ -90,26 +98,23 @@ class NetworkManager():
 	def updatePosition(self):
 		bot = self.dispatch.bot;
 		location = bot.location;
+		if bot.location.x != None:
+			bot.location.x += self.X;
+		if bot.location.y != None:
+			bot.location.y += self.Y;
+		if bot.location.z != None:
+			bot.location.z += self.Z;
+			
 		if location.x != None and location.y != None and location.z != None:
 			self.sendPacket.Packet0x04(location.x, location.y, location.z, bot.onGround);
 		return True;
 
 	def login(self):
-		global sendData
 		# Send handshake
-		packet = Buffer();
-		packet.writeVarInt(0x00);
-		packet.writeVarInt(47);
-		packet.writeString(self.HOST);
-		packet.writeUnsignedShort(self.PORT);
-		packet.writeVarInt(2);
-		self.send(packet);
+		self.sendPacket.Packet0x00_0(self.HOST, self.PORT);
 		
 		# Send login
-		packet = Buffer();
-		packet.writeVarInt(0x00);
-		packet.writeString(self.username);
-		self.send(packet);
+		self.sendPacket.Packet0x00_1(self.username);
 		
 		# Start main network loop
 		thread.start_new_thread(self.networkLoop, ());

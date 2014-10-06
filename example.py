@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from networkManager import NetworkManager
+from Dennis import Dennis;
 import socket;
 import time;
 import thread;
@@ -25,8 +25,8 @@ import zlib;
 import DataTypes;
 from pprint import pprint
 
-network = NetworkManager('localhost', 25565, 'Thebot', 'password')
-network.login()
+dennis = Dennis('localhost', 25565, 'Dennis', 'password');
+dennis.login();
 
 def getObjectData(data):
 	dataObject = {};

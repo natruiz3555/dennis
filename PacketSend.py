@@ -22,12 +22,30 @@ class PacketSend():
 	
 	def __init__(self, network):
 		self.network = network;
+
+	# Handshake
+	def Packet0x00_0(self, host, port):
+                packet = Buffer();
+                packet.writeVarInt(0x00);
+                packet.writeVarInt(47);
+                packet.writeString(host);
+                packet.writeUnsignedShort(port);
+                packet.writeVarInt(2);
+                self.network.send(packet);
+	# Login
+	def Packet0x00_1(self, username):
+                packet = Buffer();
+                packet.writeVarInt(0x00);
+                packet.writeString(username);
+                self.network.send(packet);
+
 	
 	def Packet0x04(self, X, Y, Z, onGround):
 		packet = Buffer();
 		packet.writeVarInt(0x04);
 		packet.writeDouble(float(X));
-		packet.writeDouble(float(Y-1.62));
+		packet.writeDouble(float(Y));
 		packet.writeDouble(float(Z));
-		packet.writeBool(True);
+		packet.writeBool(bool(onGround));
 		self.network.send(packet);
+
