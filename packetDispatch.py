@@ -441,8 +441,23 @@ class PacketDispatch():
 		Primarybitmap = buff.readUnsignedByte();
 		Size = buff.readVarInt();
 		Data = "";
-		for i in range(Size):
-			Data += str(buff.readByte());
+		for i in range(Size/12288):
+			if Primarybitmap & (1 << i):
+				for j in range(4096):
+					blockID = (buff.readByte() << 8) + buff.readByte();
+					metaData = BlockID & 15;
+					blockID <<= 4;
+					x = ChunckX+(j-(j%256)%4096);
+					y = (i*16)+(j%16);
+					z = ChunckZ+(j-(j%16)%256)-(j%256);
+					z = position & 0x0F00;
+					block = Block();
+					block.location.set(x+ChunkX, y, z+ChunkZ);
+					block.blockID = blockID;
+					block.metaData = metaData;
+					self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = block;
+					print "run2";
+		print "run1";
 		
 		
 	# Multi Block Change
@@ -727,6 +742,7 @@ class PacketDispatch():
 		Reason = buff.readString()
 		print("\nKicked from Server:" + Reason)
 		self.bot.loggedIn = False;
+		sys.exit();
 		exit();
 	
 	def Packet0x41(self, buff):

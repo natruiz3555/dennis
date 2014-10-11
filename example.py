@@ -25,7 +25,7 @@ import zlib;
 import DataTypes;
 from pprint import pprint
 
-dennis = Dennis('localhost', 25565, 'Dennis', 'password');
+dennis = Dennis("localhost", 25565, 'Dennis', 'password');
 dennis.login();
 
 def getObjectData(data):

@@ -4,3 +4,4 @@ class Block():
 	destroyStage = 0;
 	blockID = None;
 	blockType = None;
+	metaData = None;
