@@ -57,13 +57,17 @@ class NetworkManager():
 
 	def recv(self, length):
 		data = "";
+		request = length;
 		while length > self.receiveSize:
 			data += self.s.recv(self.receiveSize);
 			length -= self.receiveSize;
 		data += self.s.recv(length);
-		if len(data) < length:
+		if len(data) < request:
+			# Attempt to get the data again
+			data += self.s.recv(length);
+		if len(data) < request:
 			# because the socket is blocking, this would indicate a dead connection
-			raise Exception("Requested "+str(length)+" bytes but recieved "+str(len(data)))
+			raise Exception("Requested "+str(request)+" bytes but recieved "+str(len(data)))
 			thread.interrupt_main();
 			exit();
 		return data;
