@@ -1,7 +1,7 @@
 #
 #  Copyright 2014 Epsilon232 <2014ryan@student.ncc.vic.edu.au>
 # 
-# McBot is free software: you can redistribute it and/or modify
+# Dennis is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.

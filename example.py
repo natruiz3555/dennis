@@ -2,7 +2,7 @@
 #
 #  Copyright 2014 Nathan Ruiz <natruiz3553@gmail.com>
 # 
-# McBot is free software: you can redistribute it and/or modify
+# Dennis is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
