@@ -26,7 +26,11 @@ import DataTypes;
 from pprint import pprint
 
 dennis = Dennis("localhost", 25565, 'Dennis', 'password');
-dennis.login();
+try:
+	dennis.login();
+except KeyboardInterrupt:
+	dennis.disconnect();
+	exit();
 
 def getObjectData(data):
 	dataObject = {};

@@ -29,3 +29,6 @@ class Dennis():
 				sleep(0.05);
 		self.network.X = 0;
 		self.network.Z = 0;
+	def disconnect(self):
+		self.network.s.close();
+		exit();

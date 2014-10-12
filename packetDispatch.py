@@ -476,6 +476,7 @@ class PacketDispatch():
 			block.location.set(x+ChunkX, y, z+ChunkZ);
 			block.blockID = BlockID;
 			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = block;
+		print("multiblock change");
 	
 	# Block Change
 	def Packet0x23(self, buff):
@@ -486,6 +487,7 @@ class PacketDispatch():
 		block.location = Location;
 		block.blockID = BlockID;
 		self.bot.world.blocks[Location.get()] = block;
+		print("block change");
 		
 	# Block Action
 	def Packet0x24(self, buff):
@@ -517,6 +519,7 @@ class PacketDispatch():
 			CZ = buff.readInt()
 			PBitmap = buff.readShort()
 			Data = buff.readUnsignedByte()
+		print("multicolumn chunk");
 	
 	def Packet0x27(self, buff):
 		X = buff.readFloat()
@@ -742,8 +745,7 @@ class PacketDispatch():
 		Reason = buff.readString()
 		print("\nKicked from Server:" + Reason)
 		self.bot.loggedIn = False;
-		sys.exit();
-		exit();
+		thread.interrupt_main();
 	
 	def Packet0x41(self, buff):
 		Difficulty = buff.readUnsignedByte()

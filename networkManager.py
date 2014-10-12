@@ -47,19 +47,36 @@ class NetworkManager():
 		self.PORT = port
 
 		self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.s.connect((self.HOST, self.PORT))
-		self.s.setblocking(1)
+		self.s.settimeout(None);
+		try:
+			self.s.connect((self.HOST, self.PORT))
+		except socket.error:
+			print("Connection refused");
+			thread.interrupt_main();
+			exit();
 
 	def recv(self, length):
-		data = self.s.recv(length)
+		data = "";
+		while length > self.receiveSize:
+			data += self.s.recv(self.receiveSize);
+			length -= self.receiveSize;
+		data += self.s.recv(length);
 		if len(data) < length:
+			# because the socket is blocking, this would indicate a dead connection
 			raise Exception("Requested "+str(length)+" bytes but recieved "+str(len(data)))
+			thread.interrupt_main();
+			exit();
 		return data;
 
 	def send(self, data):
 		data.networkFormat(self.compressionThreshold)
 		#print("->" + data.string.encode("hex"));
-		self.s.send(data.string);
+		try:
+			self.s.send(data.string);
+		except socket.error:
+			print("Connection terminated.");
+			thread.interrupt_main();
+			exit();
 
 	def readNewData(self):
 		self.buff.addRaw(self.recv(self.receiveSize))
@@ -91,7 +108,12 @@ class NetworkManager():
 
 	def beginUpdatePositions(self):
 		while True:
-			thread.start_new_thread(self.updatePosition, ());
+			try:
+				thread.start_new_thread(self.updatePosition, ());
+			except KeyboardInterrupt:
+				self.s.close();
+				thread.interrupt_main();
+				exit();
 			time.sleep(0.05);
 
 	# updates location every 50 ms
@@ -117,9 +139,19 @@ class NetworkManager():
 		self.sendPacket.Packet0x00_1(self.username);
 		
 		# Start main network loop
-		thread.start_new_thread(self.networkLoop, ());
+		try:
+			thread.start_new_thread(self.networkLoop, ());
+		except KeyboardInterrupt:
+			self.s.close();
+			print("interupt 1");
+			exit();
 
 		# Start position update loop
-		thread.start_new_thread(self.beginUpdatePositions, ());
+		try:
+			thread.start_new_thread(self.beginUpdatePositions, ());
+		except KeyboardInterrupt:
+			self.s.close();
+			print("interupt 2");
+			exit();
 
 		self.dispatch.bot.loggedIn = True;
