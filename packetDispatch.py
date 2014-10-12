@@ -27,11 +27,9 @@ from DataTypes import *
 from Block import Block
 
 class PacketDispatch():
-	bot = Bot()
-	network = None;
-	# Keep alive
 	def __init__(self, network):
 		self.network = network;
+		self.bot = network.bot;
 
 	# Keep alive
 	def Packet0x00(self, buff):
@@ -456,8 +454,6 @@ class PacketDispatch():
 					block.blockID = blockID;
 					block.metaData = metaData;
 					self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = block;
-					print "run2";
-		print "run1";
 		
 		
 	# Multi Block Change
@@ -476,7 +472,6 @@ class PacketDispatch():
 			block.location.set(x+ChunkX, y, z+ChunkZ);
 			block.blockID = BlockID;
 			self.bot.world.blocks[(x+ChunkX, y, z+ChunkZ)] = block;
-		print("multiblock change");
 	
 	# Block Change
 	def Packet0x23(self, buff):
@@ -487,7 +482,7 @@ class PacketDispatch():
 		block.location = Location;
 		block.blockID = BlockID;
 		self.bot.world.blocks[Location.get()] = block;
-		print("block change");
+		print("block: " + str(BlockID) + " - location: " + str(Location.get()));
 		
 	# Block Action
 	def Packet0x24(self, buff):
@@ -519,7 +514,6 @@ class PacketDispatch():
 			CZ = buff.readInt()
 			PBitmap = buff.readShort()
 			Data = buff.readUnsignedByte()
-		print("multicolumn chunk");
 	
 	def Packet0x27(self, buff):
 		X = buff.readFloat()

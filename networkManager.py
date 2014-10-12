@@ -22,6 +22,7 @@ import time
 from Location import Location
 from packetDispatch import PacketDispatch
 from PacketSend import PacketSend
+from Bot import Bot
 import os
 
 class NetworkManager():
@@ -34,6 +35,7 @@ class NetworkManager():
 		self.X = 0;
 		self.Y = 0;
 		self.Z = 0;
+		self.bot = Bot();
 		self.dispatch = PacketDispatch(self)
 		self.buff = Buffer()
 		self.packetSend = [];

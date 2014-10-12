@@ -135,9 +135,9 @@ class Buffer():
 	
 	def readPosition(self):
 		val = self.readLong()
-		x = val >> 38
-		y = val << 26 >> 52
-		z = val << 38 >> 38
+		x = (val >> 38) & 0x3FFFFFF
+		y = (val >> 26) & 0xFFF
+		z = val & 0x3FFFFFF;
 		location = Location();
 		location.set(x, y, z);
 		return location;
